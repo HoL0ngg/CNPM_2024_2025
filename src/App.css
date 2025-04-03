@@ -1,0 +1,210 @@
+.App {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.food-menu {
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.back-btn span {
+  margin-right: 5px;
+}
+
+.content {
+  display: flex;
+  gap: 20px;
+  max-width: 100%;
+  /* Đảm bảo không vượt quá container cha */
+  box-sizing: border-box;
+  overflow-x: hidden;
+  /* Ngăn chặn tràn ngang */
+}
+
+.menu-section {
+  flex: 2;
+  max-width: 70%;
+  /* Giới hạn chiều rộng tối đa của menu-section */
+  box-sizing: border-box;
+  /* Đảm bảo padding/border không làm tăng kích thước */
+  overflow-x: hidden;
+  /* Ngăn chặn tràn ngang */
+}
+
+/* Container cho Swiper và các nút điều hướng */
+.swiper-container {
+  position: relative;
+  width: 88%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Style cho Swiper */
+.food-swiper {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Style cho từng slide */
+.food-placeholder {
+  width: 100%;
+  height: 100px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Style cho nút prev/next */
+.swiper-button-prev,
+.swiper-button-next {
+  width: 36px;
+  height: 36px;
+  background-color: #fff;
+  border: 2px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.swiper-button-prev {
+  left: -6%;
+}
+
+.swiper-button-next {
+  right: -6%;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 20px;
+  color: #000;
+}
+
+/* Đảm bảo Swiper và các nút hiển thị tốt trên màn hình nhỏ */
+@media (max-width: 1200px) {
+  .food-placeholder {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .swiper-button-prev {
+    left: 0;
+  }
+
+  .swiper-button-next {
+    right: 0;
+  }
+
+  .food-placeholder {
+    font-size: 12px;
+  }
+}
+
+.food-list h3 {
+  margin-bottom: 10px;
+  border-bottom: 2px solid black;
+}
+
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.food-item {
+  text-align: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.food-image-placeholder {
+  width: 100%;
+  height: 100px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.add-to-cart-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cart {
+  flex: 1;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #f0f0f0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quantity-controls button {
+  background-color: #f0f0f0;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.cart-total {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.payment-btn {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+}
