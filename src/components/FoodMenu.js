@@ -94,19 +94,21 @@ const FoodMenu = () => {
                     </div>
 
                     <div className="food-list">
-                        <h3>SEE FOOD</h3>
+                        <h3>FOOD</h3>
                         <div className="food-grid">
-                            {foodItems.map((item) => (
+                            {foodItems.map((item, index) => (
                                 <div key={item.id} className="food-item">
                                     <div className="food-image-placeholder"></div>
-                                    <p>{item.name}</p>
-                                    <p>{item.price.toLocaleString()}đ</p>
-                                    <button
-                                        className="add-to-cart-btn"
-                                        onClick={() => addToCart(item)}
-                                    >
-                                        🛒
-                                    </button>
+                                    <p className='food-title'>{index + 1}. {item.name}</p>
+                                    <div className='food-price'>
+                                        <p>{item.price.toLocaleString()}đ</p>
+                                        <button
+                                            className="add-to-cart-btn"
+                                            onClick={() => addToCart(item)}
+                                        >
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>

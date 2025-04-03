@@ -28,10 +28,13 @@ const Cart = ({ cartItems, updateQuantity }) => {
                 </div>
             ))}
             <div className="cart-total">
-                <h3>TOTAL: {grandTotal.toLocaleString()}đ</h3>
-                <p>(inc. tax 10% = {tax.toLocaleString()}đ)</p>
-                <button className="payment-btn">PAYMENT</button>
+                <h3>TOTAL:</h3>
+                <div>
+                    <p>{grandTotal.toLocaleString()}đ </p>
+                    <p>(inc. tax 10% = {tax.toLocaleString()}đ)</p>
+                </div>
             </div>
+            <button className="payment-btn">PAYMENT</button>
         </div>
     );
 };
