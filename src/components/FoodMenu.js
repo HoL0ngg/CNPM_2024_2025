@@ -62,6 +62,7 @@ const FoodMenu = () => {
                         <Swiper
                             spaceBetween={20}
                             slidesPerView={5}
+                            loop={true} // Lặp lại vòng tròn
                             navigation={{
                                 nextEl: '.swiper-button-next', // Class cho nút next
                                 prevEl: '.swiper-button-prev', // Class cho nút prev
@@ -84,7 +85,7 @@ const FoodMenu = () => {
                                 .fill()
                                 .map((_, index) => (
                                     <SwiperSlide key={index} style={{ width: 'auto' }}>
-                                        <div className="food-placeholder">Sản phẩm thứ {index + 1}</div>
+                                        <div className="food-placeholder">Mục đồ ăn thứ {index + 1}</div>
                                     </SwiperSlide>
                                 ))}
                         </Swiper>
