@@ -4,21 +4,34 @@ import 'swiper/css';
 import { Navigation } from 'swiper/modules'; // Import module Navigation
 import Cart from './Cart';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import garan from '../assets/images/ga_ran.png';
+import miy from '../assets/images/mi_y.png';
+import nuocngot from '../assets/images/nuoc_ngot.png';
 
 const FoodMenu = () => {
     const [cartItems, setCartItems] = useState([
-        { id: 1, name: 'Nước ngọt', price: 20000, quantity: 1 },
-        { id: 2, name: 'Bánh burger', price: 20000, quantity: 1 },
-        { id: 3, name: 'Mỳ xào', price: 20000, quantity: 1 },
+        { id: 1, name: 'Bánh burger', price: 20000, quantity: 1 },
+        { id: 2, name: 'Nước ngọt', price: 20000, quantity: 1 },
+        { id: 3, name: 'Mỳ ý', price: 20000, quantity: 1 },
     ]);
 
     const foodItems = [
         { id: 1, name: 'Bánh burger', price: 20000 },
         { id: 2, name: 'Nước ngọt', price: 20000 },
-        { id: 3, name: 'Mỳ xào', price: 20000 },
+        { id: 3, name: 'Mỳ ý', price: 20000 },
         { id: 4, name: 'Nước lọc', price: 20000 },
         { id: 5, name: 'Nước cam', price: 20000 },
         { id: 6, name: 'Mỳ xào', price: 20000 },
+    ];
+
+    const categories = [
+        { id: 0, namme: 'all', label: 'Tất cả', imgUrl: garan },
+        { id: 1, name: 'burger', label: 'Burger', imgUrl: garan },
+        { id: 2, name: 'drink', label: 'Nước uống', imgUrl: nuocngot },
+        { id: 3, name: 'spageti', label: 'Mỳ ý', imgUrl: miy },
+        { id: 4, name: 'water', label: 'Nước lọc', imgUrl: garan },
+        { id: 5, name: 'chicken', label: 'Gà rán', imgUrl: garan },
+
     ];
 
     const addToCart = (item) => {
@@ -81,13 +94,22 @@ const FoodMenu = () => {
                         //     },
                         // }}
                         >
-                            {Array(10)
+                            {categories.map((category) => (
+                                <SwiperSlide key={category.id} style={{ width: 'auto' }}>
+                                    <div className="food-placeholder">
+                                        <img src={category.imgUrl} alt={category.label} />
+                                        <p>{category.label}</p>
+                                    </div>
+                                </SwiperSlide>
+                            ))}
+                            {/* {Array(10)
                                 .fill()
                                 .map((_, index) => (
                                     <SwiperSlide key={index} style={{ width: 'auto' }}>
                                         <div className="food-placeholder">Mục đồ ăn thứ {index + 1}</div>
                                     </SwiperSlide>
-                                ))}
+                                ))} */}
+
                         </Swiper>
                         {/* Thêm các nút prev/next tùy chỉnh */}
                         <div className="swiper-button-prev"><i className="fas fa-arrow-left"></i></div>
@@ -95,7 +117,7 @@ const FoodMenu = () => {
                     </div>
 
                     <div className="food-list">
-                        <h3>FOOD</h3>
+                        <h3>TẤT CẢ</h3>
                         <div className="food-grid">
                             {foodItems.map((item, index) => (
                                 <div key={item.id} className="food-item">
@@ -107,7 +129,7 @@ const FoodMenu = () => {
                                             className="add-to-cart-btn"
                                             onClick={() => addToCart(item)}
                                         >
-                                            <i class="fa-solid fa-cart-plus"></i>
+                                            <i className="fa-solid fa-cart-plus"></i>
                                         </button>
                                     </div>
                                 </div>
