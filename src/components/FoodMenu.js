@@ -31,7 +31,6 @@ const FoodMenu = () => {
         { id: 3, name: 'spageti', label: 'Mỳ ý', imgUrl: miy },
         { id: 4, name: 'water', label: 'Nước lọc', imgUrl: garan },
         { id: 5, name: 'chicken', label: 'Gà rán', imgUrl: garan },
-
     ];
 
     const addToCart = (item) => {
@@ -141,6 +140,7 @@ const FoodMenu = () => {
                 <Cart cartItems={cartItems} updateQuantity={updateQuantity} />
             </div>
         </div>
+
     );
 };
 
