@@ -63,7 +63,7 @@
   position: relative;
   width: 88%;
   max-width: 100%;
-  margin: 0 auto;
+  margin: 10px auto;  
 }
 
 /* Style cho Swiper */
@@ -71,13 +71,14 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  /* margin: 0 7px; */
 }
 
 /* Style cho từng slide */
 .food-placeholder {
-  width: 100%;
+  width: 95%;
   height: 100px;
-  background-color: #f0f0f0;
+  background-color: #fff;
   border-radius: 8px;
   box-sizing: border-box;
   display: flex;
@@ -86,13 +87,26 @@
   font-size: 16px;
   color: #333;
   flex-direction: column;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid #ccc;
+  margin: 10px 0;
+}
+.food-placeholder.active {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+  transform: scale(1.05);
+  box-shadow: 0 5px 6px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  font-weight: bold;
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
 .food-placeholder img {
-  width: 80%;
-  height: 80%;
-  object-fit: cover;
-  border-radius: 8px;
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  /* border-radius: 50%; */
 }
 
 .food-placeholder p {
@@ -179,7 +193,7 @@
   /* text-align: center; */
   background-color: #fff;
   /* padding: 10px; */
-  height: 100%;
+  height: fit-content;
   /* margin: 26px; */
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
@@ -188,14 +202,15 @@
 .food-image-placeholder {
   width: 100%;
   height: 150px;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 8px;
   margin-bottom: 10px;
+  text-align: center;
 }
 .food-image-placeholder img{
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 .food-title {
   border-bottom: 1px solid #333;
@@ -205,6 +220,7 @@
 .food-title,
 .food-price {
   margin: 7px 10px;
+  font-size: 1.2rem;
 }
 
 .food-price {
@@ -213,7 +229,11 @@
   justify-content: space-between;
   padding: 7px 10px;
 }
-
+.food-price p{
+  color: #ff5b6a;
+  
+  font-weight: 600;
+}
 .add-to-cart-btn {
   background-color: #ff4d4d;
   color: white;
@@ -226,7 +246,7 @@
 .cart {
   flex: 1;
   background-color: #fff;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
   border: 2px solid #f0f0f0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -306,6 +326,7 @@
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 1rem;
 }
 
 .quantity span {
@@ -316,7 +337,7 @@
 .cart-total {
   margin-top: 8px;
   display: flex;
-  padding-top: 44px;
+  padding-top: 7px;
   justify-content: space-between;
   border-top: 2px solid #f0f0f0;
 }
@@ -371,13 +392,15 @@
 .close-btn {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 5px;
   background: none;
   border: none;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   cursor: pointer;
   z-index: 2;
   font-weight: 600;
+  width: 30px;
+  height: 30px;
 
 }
 
@@ -442,6 +465,10 @@
 .topping-container{
   overflow-y: auto;
   height: 200px;
+}
+.topping-container.empty {
+  height: 0;
+  overflow: hidden;
 }
 .topping-item input[type="checkbox"] {
   margin-right: 10px;

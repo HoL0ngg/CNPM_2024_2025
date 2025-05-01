@@ -11,7 +11,7 @@ import ProductDetail from "./ProductDetail"; // import component chi tiết sả
 import burger from "../assets/images/hamburger.png";
 import nuoccam from "../assets/images/nuoccam.png";
 import nuocsuoi from "../assets/images/nuocsuoi.png";
-
+import cocacola from "../assets/images/cocacola.png";
 const FoodMenu = () => {
   // const [cartItems, setCartItems] = useState([
   //   { id: 1, name: "Bánh burger", price: 20000, quantity: 1 },
@@ -20,38 +20,61 @@ const FoodMenu = () => {
   // ]);
   const [cartItems, setCartItems] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedCategory, setselectedCategory] = useState("all");
   const foodItems = [
-    { id: 1, name: "Bánh burger", price: 20000, imgUrl: burger },
-    { id: 2, name: "Nước ngọt", price: 20000, imgUrl: burger },
-    { id: 3, name: "Mỳ ý", price: 20000, imgUrl: miy },
-    { id: 4, name: "Nước lọc", price: 20000, imgUrl: nuocsuoi },
-    { id: 5, name: "Nước cam", price: 20000, imgUrl: nuoccam },
-    { id: 6, name: "Mỳ xào", price: 20000, imgUrl: burger },
+    {
+      id: 1,
+      name: "Bánh burger",
+      price: 25000,
+      category: "burger",
+      imgUrl: burger,
+    },
+    {
+      id: 2,
+      name: "Nước ngọt",
+      price: 15000,
+      category: "drink",
+      imgUrl: cocacola,
+    },
+    {
+      id: 3,
+      name: "Mỳ ý",
+      price: 30000,
+      category: "spagetti",
+      imgUrl: miy,
+    },
+    {
+      id: 4,
+      name: "Nước lọc",
+      price: 10000,
+      category: "water",
+      imgUrl: nuocsuoi,
+    },
+    {
+      id: 5,
+      name: "Nước cam",
+      price: 20000,
+      category: "drink",
+      imgUrl: nuoccam,
+    },
+    {
+      id: 6,
+      name: "Mỳ xào",
+      price: 20000,
+      category: "spagetti",
+      imgUrl: burger,
+    },
   ];
 
   const categories = [
-    { id: 0, namme: "all", label: "Tất cả", imgUrl: garan },
-    { id: 1, name: "burger", label: "Burger", imgUrl: garan },
+    { id: 0, name: "all", label: "Tất cả", imgUrl: garan },
+    { id: 1, name: "burger", label: "Burger", imgUrl: burger },
     { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
-    { id: 3, name: "spageti", label: "Mỳ ý", imgUrl: miy },
+    { id: 3, name: "spagetti", label: "Mỳ ý", imgUrl: miy },
     { id: 4, name: "water", label: "Nước lọc", imgUrl: garan },
     { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
   ];
 
-  // const addToCart = (item) => {
-  //     const existingItem = cartItems.find((cartItem) => cartItem.id === item.id);
-  //     if (existingItem) {
-  //         setCartItems(
-  //             cartItems.map((cartItem) =>
-  //                 cartItem.id === item.id
-  //                     ? { ...cartItem, quantity: cartItem.quantity + 1 }
-  //                     : cartItem
-  //             )
-  //         );
-  //     } else {
-  //         setCartItems([...cartItems, { ...item, quantity: 1 }]);
-  //     }
-  // };
   const addToCart = (item) => {
     const existingItem = cartItems.find((cartItem) => {
       const cartToppingIds = (cartItem.toppings || []).map((t) => t.id).sort();
@@ -100,6 +123,10 @@ const FoodMenu = () => {
   const closeProductDetail = () => {
     setSelectedProduct(null);
   };
+  const filteredItem =
+    selectedCategory === "all"
+      ? foodItems
+      : foodItems.filter((item) => item.category === selectedCategory);
   return (
     <div className="food-menu">
       <div className="header">
@@ -127,7 +154,12 @@ const FoodMenu = () => {
             >
               {categories.map((category) => (
                 <SwiperSlide key={category.id} style={{ width: "auto" }}>
-                  <div className="food-placeholder">
+                  <div
+                    className={`food-placeholder ${
+                      selectedCategory === category.name ? "active" : ""
+                    }`}
+                    onClick={() => setselectedCategory(category.name)}
+                  >
                     <img src={category.imgUrl} alt={category.label} />
                     <p>{category.label}</p>
                   </div>
@@ -143,9 +175,13 @@ const FoodMenu = () => {
           </div>
 
           <div className="food-list">
-            <h3>TẤT CẢ</h3>
+            <h3>
+              {categories
+                .find((c) => c.name === selectedCategory)
+                ?.label.toUpperCase()}
+            </h3>
             <div className="food-grid">
-              {foodItems.map((item, index) => (
+              {filteredItem.map((item, index) => (
                 <div key={item.id} className="food-item">
                   <div className="food-image-placeholder">
                     <img src={item.imgUrl} />

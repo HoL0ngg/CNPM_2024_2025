@@ -14,6 +14,7 @@ const Cart = ({ cartItems, updateQuantity }) => {
   );
   const tax = total * 0.1;
   const grandTotal = total + tax;
+
   return (
     <div className="cart">
       <h2>GIỎ HÀNG ({cartItems.length})</h2>
