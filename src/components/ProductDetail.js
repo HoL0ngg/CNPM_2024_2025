@@ -43,7 +43,6 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
       ...product,
       quantity,
       toppings: selectedToppingsDetail,
-      totalPrice,
     };
     addToCart(updatedProduct);
     onClose();

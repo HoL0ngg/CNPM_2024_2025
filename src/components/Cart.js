@@ -1,13 +1,19 @@
 import React from "react";
 
 const Cart = ({ cartItems, updateQuantity }) => {
+  // Tính tổng tiền từng item bao gồm topping
+  const getItemTotalPrice = (item) => {
+    const toppingTotal =
+      item.toppings?.reduce((sum, topping) => sum + topping.price, 0) || 0;
+    return (item.price + toppingTotal) * item.quantity;
+  };
+
   const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + getItemTotalPrice(item),
     0
   );
   const tax = total * 0.1;
   const grandTotal = total + tax;
-
   return (
     <div className="cart">
       <h2>GIỎ HÀNG ({cartItems.length})</h2>
@@ -16,7 +22,10 @@ const Cart = ({ cartItems, updateQuantity }) => {
           <div key={item.id} className="cart-item">
             <div className="item-img">
               <img
-                src={`https://via.placeholder.com/150?text=${item.name}`}
+                src={
+                  item.imgUrl ||
+                  `https://via.placeholder.com/150?text=${item.name}`
+                }
                 alt={item.name}
               />
             </div>
@@ -24,6 +33,21 @@ const Cart = ({ cartItems, updateQuantity }) => {
               <p>
                 {item.id}. {item.name}
               </p>
+
+              {/* Nếu có topping thì show ra */}
+              {item.toppings && item.toppings.length > 0 && (
+                <div className="toppings-list">
+                  <small>+ Topping:</small>
+                  <ul>
+                    {item.toppings.map((topping) => (
+                      <li key={topping.id}>
+                        {topping.name} (+{topping.price.toLocaleString()}đ)
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
               <div className="quantity-controls">
                 <div className="quantity">
                   <button onClick={() => updateQuantity(item.id, -1)}>-</button>
@@ -32,20 +56,25 @@ const Cart = ({ cartItems, updateQuantity }) => {
                 </div>
                 <div>
                   <p>{item.price.toLocaleString()}đ</p>
-                  <p>(inc. tax 10% = {(item.price * 0.1).toLocaleString()}đ)</p>
+                  <p>
+                    (inc. tax 10% ={" "}
+                    {(getItemTotalPrice(item) * 0.1).toLocaleString()}đ)
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         ))}
       </div>
+
       <div className="cart-total">
-        <h3>TOTAL:</h3>
+        <h3>TỔNG CỘNG:</h3>
         <div>
-          <p>{grandTotal.toLocaleString()}đ </p>
+          <p>{grandTotal.toLocaleString()}đ</p>
           <p>(inc. tax 10% = {tax.toLocaleString()}đ)</p>
         </div>
       </div>
+
       <button className="payment-btn">THANH TOÁN</button>
     </div>
   );

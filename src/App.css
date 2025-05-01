@@ -250,7 +250,11 @@
   border-radius: 8px;
   flex: 1;
 }
-
+.item-img img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .item-info {
   flex: 3;
 }
@@ -261,7 +265,9 @@
   font-weight: 500;
   color: #333;
 }
-
+.toppings-list ul{
+  margin: 5px;
+}
 .quantity-controls {
   display: flex;
   align-items: center;
