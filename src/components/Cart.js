@@ -7,7 +7,7 @@ const Cart = ({ cartItems, updateQuantity }) => {
       item.toppings?.reduce((sum, topping) => sum + topping.price, 0) || 0;
     return (item.price + toppingTotal) * item.quantity;
   };
-
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
   const total = cartItems.reduce(
     (sum, item) => sum + getItemTotalPrice(item),
     0
@@ -17,7 +17,8 @@ const Cart = ({ cartItems, updateQuantity }) => {
 
   return (
     <div className="cart">
-      <h2>GIỎ HÀNG ({cartItems.length})</h2>
+      <h2>GIỎ HÀNG ({totalQuantity})</h2>
+      {/* <h2>GIỎ HÀNG ({cartItems.length})</h2> */}
       <div className="cart-items-container">
         {cartItems.map((item) => (
           <div key={item.id} className="cart-item">
