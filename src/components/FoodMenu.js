@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Navigation } from "swiper/modules"; // Import module Navigation
@@ -8,6 +8,7 @@ import garan from "../assets/images/ga_ran.png";
 import miy from "../assets/images/mi_y.png";
 import nuocngot from "../assets/images/nuoc_ngot.png";
 import ProductDetail from "./ProductDetail"; // import component chi tiết sản phẩm
+
 import burger from "../assets/images/hamburger.png";
 import nuoccam from "../assets/images/nuoccam.png";
 import nuocsuoi from "../assets/images/nuocsuoi.png";
@@ -21,6 +22,10 @@ const FoodMenu = () => {
   const [cartItems, setCartItems] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setselectedCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+
+
+
   const foodItems = [
     {
       id: 1,
@@ -123,10 +128,17 @@ const FoodMenu = () => {
   const closeProductDetail = () => {
     setSelectedProduct(null);
   };
-  const filteredItem =
-    selectedCategory === "all"
-      ? foodItems
-      : foodItems.filter((item) => item.category === selectedCategory);
+
+  const filteredItems = foodItems
+  .filter((item) =>
+    selectedCategory === "all" || item.category === selectedCategory
+  )
+  .filter((item) =>
+    searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+ 
+
   return (
     <div className="food-menu">
       <div className="header">
@@ -174,6 +186,21 @@ const FoodMenu = () => {
             </div>
           </div>
 
+          <div className="search-container">
+            <div className="search-input-wrapper">
+                <input 
+                type="text" 
+                className="search-input" 
+                placeholder="Tìm kiếm món ăn..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button className="search-button">
+                <i className="fas fa-search"></i>
+                </button>
+            </div>
+          </div>
+
           <div className="food-list">
             <h3>
               {categories
@@ -181,7 +208,7 @@ const FoodMenu = () => {
                 ?.label.toUpperCase()}
             </h3>
             <div className="food-grid">
-              {filteredItem.map((item, index) => (
+              {filteredItems.map((item, index) => (
                 <div key={item.id} className="food-item">
                   <div className="food-image-placeholder">
                     <img src={item.imgUrl} />
@@ -205,6 +232,7 @@ const FoodMenu = () => {
         </div>
 
         <Cart cartItems={cartItems} updateQuantity={updateQuantity} />
+        
       </div>
 
       {selectedProduct && (
@@ -214,6 +242,10 @@ const FoodMenu = () => {
           addToCart={addToCart}
         />
       )}
+
+    
+
+
     </div>
   );
 };

@@ -1,6 +1,25 @@
 import React from "react";
+import CheckoutModal from "./CheckoutModal";
+import { useState } from "react";
 
 const Cart = ({ cartItems, updateQuantity }) => {
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);  
+
+  const openCheckoutModal = () => {
+    setShowCheckoutModal(true);
+  }
+  const closeCheckoutModal = () => {
+    setShowCheckoutModal(false);
+  }
+  const handleCheckout = () => {
+    if(cartItems.length === 0) {
+      alert("Đặt món đi bạn êy");
+      return;
+    }
+    setShowCheckoutModal(true);
+  }
+
+
   // Tính tổng tiền từng item bao gồm topping
   const getItemTotalPrice = (item) => {
     const toppingTotal =
@@ -77,8 +96,19 @@ const Cart = ({ cartItems, updateQuantity }) => {
         </div>
       </div>
 
-      <button className="payment-btn">THANH TOÁN</button>
+      <button className="payment-btn" onClick={() => handleCheckout()}>THANH TOÁN</button>
+
+      {showCheckoutModal && (
+        <CheckoutModal
+          cartItems={cartItems}
+          onClose={closeCheckoutModal}
+          
+        />
+      )}
+
     </div>
+
+   
   );
 };
 
