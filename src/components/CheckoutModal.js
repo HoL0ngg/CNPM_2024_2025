@@ -27,8 +27,8 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
   const handleConfirmCheckout = () => {
     if (!paymentMethod) {
       toast.error("❌ Vui lòng chọn phương thức thanh toán!", {
-        position: "top-center",
-        autoClose: 5000,
+        position: "top-right",
+        autoClose: 4000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

@@ -13,7 +13,7 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
     if (cartItems.length === 0) {
       toast.error("❌ Vui lòng đặt món!", {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 4000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
