@@ -13,7 +13,7 @@ const Cart = ({ cartItems, updateQuantity }) => {
   }
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      alert("Đặt món đi bạn êy");
+      alert("Vui lòng đặt món!");
       return;
     }
     setShowCheckoutModal(true);

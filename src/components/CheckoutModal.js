@@ -25,7 +25,7 @@ const CheckoutModal = ({onClose, cartItems}) => {
     };
     const handleConfirmCheckout = () => {
         if(!paymentMethod) {
-            alert("Chọn phươn thức thanh toán đi bạn êy");
+            alert("Vui lòng chọn phương thức thanh toán!");
             return;
         }
         setShowCheckoutContent(false);
