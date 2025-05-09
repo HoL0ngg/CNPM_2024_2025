@@ -186,10 +186,9 @@
   gap: 24px;
   width: 95%;
   margin: 20px auto 0;
-  height: 62%;
+  height: auto;
   overflow-y: auto;
   padding: 4px;
-  justify-content: space-between;
 }
 
 .food-item {
