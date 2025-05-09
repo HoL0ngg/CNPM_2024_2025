@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
 import { toast } from 'react-toastify';
 
-const CheckoutModal = ({ onClose, cartItems }) => {
+const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderConfirmed }) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCheckoutContent, setShowCheckoutContent] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -163,9 +163,11 @@ const CheckoutModal = ({ onClose, cartItems }) => {
             subtotal={subtotal}
             tax={tax}
             total={total}
-            onCloseCheckoutModal={handleCloseConfirmModal}
+            onCloseCheckoutConfirm={handleCloseConfirmModal}
             onOpenCheckoutContent={() => setShowCheckoutContent(true)}
-            paymentMethod={paymentMethod} // Truyền paymentMethod vào ConfirmModal
+            paymentMethod={paymentMethod} 
+            onCloseCheckoutModal={onCloseCheckoutModal}
+            handleOrderConfirmed={handleOrderConfirmed}
           />
         )}
       </div>
