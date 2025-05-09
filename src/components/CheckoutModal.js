@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ConfirmModal from './ConfirmModal';
 
-const CheckoutModal = ({onClose, cartItems}) => {
+const CheckoutModal = ({onClose, cartItems, onCloseCheckoutModal, handleOrderConfirmed}) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showCheckoutContent, setShowCheckoutContent] = useState(true);
     const [paymentMethod, setPaymentMethod] = useState(''); 
@@ -16,7 +16,7 @@ const CheckoutModal = ({onClose, cartItems}) => {
     const handleShowConfirmModal = () => {
         setShowConfirmModal(true);
     }
-    const handleCloseConfirmModal = () => {
+    const handleCloseCheckoutConfirm = () => {
         setShowConfirmModal(false);
     }
     const handlePaymentMethodChange = (e) => {
@@ -153,9 +153,11 @@ const CheckoutModal = ({onClose, cartItems}) => {
             subtotal={subtotal}
             tax={tax}
             total={total}
-            onCloseCheckoutModal={handleCloseConfirmModal}
+            onCloseCheckoutConfirm={handleCloseCheckoutConfirm}
             onOpenCheckoutContent={() => setShowCheckoutContent(true)}
             paymentMethod={paymentMethod} // Truyền paymentMethod vào ConfirmModal
+            onCloseCheckoutModal={onCloseCheckoutModal}
+            handleOrderConfirmed={handleOrderConfirmed} // Truyền handleOrderConfirmed vào ConfirmModal
           />
         )}
       </div>
