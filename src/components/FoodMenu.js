@@ -24,7 +24,9 @@ const FoodMenu = () => {
   const [selectedCategory, setselectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
-
+  const handleOrderConfirmed = () => {
+    setCartItems([]);
+  }
 
   const foodItems = [
     {
@@ -231,7 +233,7 @@ const FoodMenu = () => {
           </div>
         </div>
 
-        <Cart cartItems={cartItems} updateQuantity={updateQuantity} />
+        <Cart cartItems={cartItems} updateQuantity={updateQuantity} handleOrderConfirmed = {handleOrderConfirmed} />
 
       </div>
 

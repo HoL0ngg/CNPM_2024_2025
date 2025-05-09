@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
 
-const ConfirmModal = ({cartItems, subtotal, tax, total, onCloseCheckoutModal, onOpenCheckoutContent, paymentMethod}) => {
- 
+const ConfirmModal = ({cartItems, subtotal, tax, total, onCloseCheckoutConfirm, onOpenCheckoutContent, paymentMethod, onCloseCheckoutModal, handleOrderConfirmed}) => {
+
+  const handleCheckoutConfirm = () => {
+      alert('Đơn đã được xác nhận!');
+      onCloseCheckoutConfirm();
+      onCloseCheckoutModal();
+      handleOrderConfirmed();
+  }
+
     return (
         <div id="checkout-modal-overlay">
           <div id="checkout-modal-container">
             <div id="checkout-close-btn" onClick={() => {
-                onCloseCheckoutModal();
+                onCloseCheckoutConfirm();
                 onOpenCheckoutContent();
             }}>
               ×
             </div>
             
-            <h2 id="checkout-title">Xác nhận đơn đặt hàng</h2>
+            <h2 id="checkout-title">Xác nhận đơn món</h2>
             
             <div id="customer-info-section">
               <h3>Thông tin khách hàng</h3>
@@ -92,13 +99,13 @@ const ConfirmModal = ({cartItems, subtotal, tax, total, onCloseCheckoutModal, on
             
             <div id="checkout-action-buttons">
               <button type="button" id="checkout-cancel-btn" onClick={() => {
-                onCloseCheckoutModal()
+                onCloseCheckoutConfirm()
                 onOpenCheckoutContent()
                 }}>
                 Hủy
               </button>
-              <button type="button" id="checkout-confirm-btn" onClick={() => {}}>
-                Xác nhận đặt hàng
+              <button type="button" id="checkout-confirm-btn" onClick={() => handleCheckoutConfirm()}>
+                Xác nhận
               </button>
             </div>
           </div>

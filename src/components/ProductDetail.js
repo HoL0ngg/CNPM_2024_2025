@@ -60,7 +60,11 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
           ) : (
             ""
           )}
-          <div className="{`topping-container ${availableToppings.length === 0 ? 'empty' : ''}`}">
+          <div
+            className={`topping-container ${
+              availableToppings.length === 0 ? "empty" : ""
+            }`}
+          >
             {availableToppings.map((topping) => (
               <div key={topping.id} className="topping-item">
                 <input
