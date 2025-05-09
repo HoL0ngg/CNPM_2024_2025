@@ -11,8 +11,11 @@ import ProductDetail from "./ProductDetail"; // import component chi tiết sả
 
 import burger from "../assets/images/hamburger.png";
 import nuoccam from "../assets/images/nuoccam.png";
-import nuocsuoi from "../assets/images/nuocsuoi.png";
 import cocacola from "../assets/images/cocacola.png";
+import banhtrangtron from "../assets/images/banhtrangtron.png";
+import mixao from "../assets/images/mixao.png";
+import welcome from "../assets/images/welcome.png";
+
 const FoodMenu = () => {
   // const [cartItems, setCartItems] = useState([
   //   { id: 1, name: "Bánh burger", price: 20000, quantity: 1 },
@@ -52,10 +55,10 @@ const FoodMenu = () => {
     },
     {
       id: 4,
-      name: "Nước lọc",
+      name: "Bánh tráng trộn",
       price: 10000,
-      category: "water",
-      imgUrl: nuocsuoi,
+      category: "banhtrangtron",
+      imgUrl: banhtrangtron,
     },
     {
       id: 5,
@@ -69,16 +72,16 @@ const FoodMenu = () => {
       name: "Mỳ xào",
       price: 20000,
       category: "spagetti",
-      imgUrl: burger,
+      imgUrl: mixao,
     },
   ];
 
   const categories = [
-    { id: 0, name: "all", label: "Tất cả", imgUrl: garan },
+    { id: 0, name: "all", label: "Tất cả", imgUrl: welcome },
     { id: 1, name: "burger", label: "Burger", imgUrl: burger },
     { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
-    { id: 3, name: "spagetti", label: "Mỳ ý", imgUrl: miy },
-    { id: 4, name: "water", label: "Nước lọc", imgUrl: garan },
+    { id: 3, name: "spagetti", label: "Mỳ", imgUrl: miy },
+    { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
     { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
   ];
 
@@ -233,7 +236,7 @@ const FoodMenu = () => {
           </div>
         </div>
 
-        <Cart cartItems={cartItems} updateQuantity={updateQuantity} handleOrderConfirmed = {handleOrderConfirmed} />
+        <Cart cartItems={cartItems} updateQuantity={updateQuantity} handleOrderConfirmed={handleOrderConfirmed} />
 
       </div>
 
