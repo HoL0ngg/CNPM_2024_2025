@@ -130,14 +130,14 @@ const FoodMenu = () => {
   };
 
   const filteredItems = foodItems
-  .filter((item) =>
-    selectedCategory === "all" || item.category === selectedCategory
-  )
-  .filter((item) =>
-    searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    .filter((item) =>
+      selectedCategory === "all" || item.category === selectedCategory
+    )
+    .filter((item) =>
+      searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
- 
+
 
   return (
     <div className="food-menu">
@@ -148,6 +148,21 @@ const FoodMenu = () => {
           </span>{" "}
           Back to home
         </button>
+        <div className="search-container">
+          <div className="search-input-wrapper">
+            <input
+              type="text"
+              className="search-input"
+              placeholder="Tìm kiếm món ăn ..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="search-button">
+              <i className="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <div className="content">
@@ -167,9 +182,8 @@ const FoodMenu = () => {
               {categories.map((category) => (
                 <SwiperSlide key={category.id} style={{ width: "auto" }}>
                   <div
-                    className={`food-placeholder ${
-                      selectedCategory === category.name ? "active" : ""
-                    }`}
+                    className={`food-placeholder ${selectedCategory === category.name ? "active" : ""
+                      }`}
                     onClick={() => setselectedCategory(category.name)}
                   >
                     <img src={category.imgUrl} alt={category.label} />
@@ -186,20 +200,6 @@ const FoodMenu = () => {
             </div>
           </div>
 
-          <div className="search-container">
-            <div className="search-input-wrapper">
-                <input 
-                type="text" 
-                className="search-input" 
-                placeholder="Tìm kiếm món ăn..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="search-button">
-                <i className="fas fa-search"></i>
-                </button>
-            </div>
-          </div>
 
           <div className="food-list">
             <h3>
@@ -232,7 +232,7 @@ const FoodMenu = () => {
         </div>
 
         <Cart cartItems={cartItems} updateQuantity={updateQuantity} />
-        
+
       </div>
 
       {selectedProduct && (
@@ -243,7 +243,7 @@ const FoodMenu = () => {
         />
       )}
 
-    
+
 
 
     </div>

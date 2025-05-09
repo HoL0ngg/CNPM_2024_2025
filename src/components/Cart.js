@@ -3,7 +3,7 @@ import CheckoutModal from "./CheckoutModal";
 import { useState } from "react";
 
 const Cart = ({ cartItems, updateQuantity }) => {
-  const [showCheckoutModal, setShowCheckoutModal] = useState(false);  
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   const openCheckoutModal = () => {
     setShowCheckoutModal(true);
@@ -12,7 +12,7 @@ const Cart = ({ cartItems, updateQuantity }) => {
     setShowCheckoutModal(false);
   }
   const handleCheckout = () => {
-    if(cartItems.length === 0) {
+    if (cartItems.length === 0) {
       alert("Đặt món đi bạn êy");
       return;
     }
@@ -36,7 +36,9 @@ const Cart = ({ cartItems, updateQuantity }) => {
 
   return (
     <div className="cart">
-      <h2>GIỎ HÀNG ({totalQuantity})</h2>
+      <div id="cart-header">
+        <i class="fa-solid fa-cart-shopping"></i><h3>GIỎ HÀNG ({totalQuantity})</h3>
+      </div>
       {/* <h2>GIỎ HÀNG ({cartItems.length})</h2> */}
       <div className="cart-items-container">
         {cartItems.map((item) => (
@@ -102,13 +104,13 @@ const Cart = ({ cartItems, updateQuantity }) => {
         <CheckoutModal
           cartItems={cartItems}
           onClose={closeCheckoutModal}
-          
+
         />
       )}
 
     </div>
 
-   
+
   );
 };
 
