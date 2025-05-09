@@ -169,7 +169,6 @@
   }
 }
 
-
 .food-list {
   height: 100%;
   overflow-y: hidden;
@@ -200,7 +199,6 @@
   /* Giống với 3 cột có gap 24px */
   box-sizing: border-box;
 }
-
 
 .food-image-placeholder {
   width: 100%;
@@ -257,7 +255,7 @@
   border-radius: 8px;
   border: 2px solid #f0f0f0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  height: 85%;
+  height: 87%;
 }
 
 #cart-header {
@@ -266,7 +264,8 @@
   color: red;
 }
 
-#cart-header i {}
+#cart-header i {
+}
 
 #cart-header h3 {
   display: inline;
@@ -389,7 +388,7 @@
   background-color: #ff4d4d;
   color: white;
   border: none;
-  padding: 16px 20px;
+  padding: 10px;
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
@@ -421,7 +420,6 @@
   font-weight: 600;
   width: 30px;
   height: 30px;
-
 }
 
 .product-detail-content {
@@ -430,9 +428,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 700px;
+  width: 60%;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  /* min-height: 500px; */
 }
 
 .left-section {
@@ -582,7 +581,6 @@
   width: 100%;
 }
 
-
 /* input tìm kiếm món ăn */
 .search-container {
   width: 100%;
@@ -653,9 +651,7 @@
   }
 }
 
-
 /*===============================================================================================*/
-
 
 /* CheckoutModal (giao diện thanh toán) */
 .checkout-modal {
@@ -917,7 +913,6 @@
 }
 
 /*===============================================================================================*/
-
 
 /* Giao diện xác nhận đơn đặt hàng */
 #checkout-modal-overlay {
