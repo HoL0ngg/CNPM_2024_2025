@@ -1,14 +1,14 @@
 import React from "react";
 import CheckoutModal from "./CheckoutModal";
 import { useState } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   const closeCheckoutModal = () => {
     setShowCheckoutModal(false);
-  }
+  };
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       toast.error("❌ Vui lòng đặt món!", {
@@ -24,8 +24,7 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
       return;
     }
     setShowCheckoutModal(true);
-  }
-
+  };
 
   // Tính tổng tiền từng item bao gồm topping
   const getItemTotalPrice = (item) => {
@@ -40,16 +39,22 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
   );
   const tax = total * 0.1;
   const grandTotal = total + tax;
-
+  var index = 0;
   return (
     <div className="cart">
       <div id="cart-header">
-        <i class="fa-solid fa-cart-shopping"></i><h3>GIỎ HÀNG ({totalQuantity})</h3>
+        <i class="fa-solid fa-cart-shopping"></i>
+        <h3>GIỎ HÀNG ({totalQuantity})</h3>
       </div>
       {/* <h2>GIỎ HÀNG ({cartItems.length})</h2> */}
       <div className="cart-items-container">
         {cartItems.map((item) => (
-          <div key={item.id} className="cart-item">
+          <div
+            key={`${item.id}-${
+              item.toppings?.map((t) => t.id).join("-") || "no-topping"
+            }`}
+            className="cart-item"
+          >
             <div className="item-img">
               <img
                 src={
@@ -61,7 +66,8 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
             </div>
             <div className="item-info">
               <p>
-                {item.id}. {item.name}
+                {/* {item.id}. {item.name} */}
+                {++index}. {item.name}
               </p>
 
               {/* Nếu có topping thì show ra */}
@@ -105,7 +111,9 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
         </div>
       </div>
 
-      <button className="payment-btn" onClick={() => handleCheckout()}>THANH TOÁN</button>
+      <button className="payment-btn" onClick={() => handleCheckout()}>
+        THANH TOÁN
+      </button>
 
       {showCheckoutModal && (
         <CheckoutModal
@@ -115,10 +123,7 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
           handleOrderConfirmed={handleOrderConfirmed}
         />
       )}
-
     </div>
-
-
   );
 };
 

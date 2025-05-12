@@ -49,11 +49,11 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
         <div className="close-btn" onClick={onClose}>
           x
         </div>
-        <div className="left-section">
+        <div className="left-section-product-detail">
           <img src={product.imgUrl} alt={product.name} className="main-image" />
         </div>
 
-        <div className="right-section">
+        <div className="right-section-product-detail">
           <h2>{product.name}</h2>
           {availableToppings.length > 0 ? (
             <p className="subtext">Ngon hơn khi ăn kèm</p>
@@ -97,9 +97,11 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
             <strong>Tổng cộng: </strong>{" "}
             <span>{totalPrice.toLocaleString()}đ</span>
           </p>
-          <button className="add-to-cart" onClick={handleAddToCart}>
-            Thêm vào giỏ hàng
-          </button>
+          <div id="addToCartContainer">
+            <button className="add-to-cart" onClick={handleAddToCart}>
+              Thêm vào giỏ hàng
+            </button>
+          </div>
         </div>
       </div>
     </div>
