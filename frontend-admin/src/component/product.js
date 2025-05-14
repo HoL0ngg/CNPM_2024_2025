@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Typography, Paper, Box, TextField, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -6,23 +6,40 @@ import {
   InputLabel, Select, MenuItem, Grid
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import axios from 'axios';
 
 const Product = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [products, setProducts] = useState([]);
 
   // Sample product data
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Mỳ ý', category: 'Mỳ', price: '30.000đ', stock: 45, image: 'my_y.jpg' },
-    { id: 2, name: 'Burger', category: 'Bánh mì', price: '25.000đ', stock: 36, image: 'burger.jpg' },
-    { id: 3, name: 'Bánh tráng trộn', category: 'Bánh tráng', price: '10.000đ', stock: 60, image: 'banh_trang.jpg' },
-    { id: 4, name: 'Nước ngọt', category: 'Đồ uống', price: '15.000đ', stock: 100, image: 'nuoc_ngot.jpg' },
-    { id: 5, name: 'Mỳ xào', category: 'Mỳ', price: '20.000đ', stock: 40, image: 'my_xao.jpg' },
-    { id: 6, name: 'Cơm chiên', category: 'Cơm', price: '22.000đ', stock: 30, image: 'com_chien.jpg' },
-    { id: 7, name: 'Trà sữa', category: 'Đồ uống', price: '18.000đ', stock: 50, image: 'tra_sua.jpg' },
-    { id: 8, name: 'Salad', category: 'Rau', price: '35.000đ', stock: 25, image: 'salad.jpg' },
-  ]);
+  // const [products, setProducts] = useState([
+  //   { id: 1, name: 'Mỳ ý', category: 'Mỳ', price: '30.000đ', stock: 45, image: 'my_y.jpg' },
+  //   { id: 2, name: 'Burger', category: 'Bánh mì', price: '25.000đ', stock: 36, image: 'burger.jpg' },
+  //   { id: 3, name: 'Bánh tráng trộn', category: 'Bánh tráng', price: '10.000đ', stock: 60, image: 'banh_trang.jpg' },
+  //   { id: 4, name: 'Nước ngọt', category: 'Đồ uống', price: '15.000đ', stock: 100, image: 'nuoc_ngot.jpg' },
+  //   { id: 5, name: 'Mỳ xào', category: 'Mỳ', price: '20.000đ', stock: 40, image: 'my_xao.jpg' },
+  //   { id: 6, name: 'Cơm chiên', category: 'Cơm', price: '22.000đ', stock: 30, image: 'com_chien.jpg' },
+  //   { id: 7, name: 'Trà sữa', category: 'Đồ uống', price: '18.000đ', stock: 50, image: 'tra_sua.jpg' },
+  //   { id: 8, name: 'Salad', category: 'Rau', price: '35.000đ', stock: 25, image: 'salad.jpg' },
+  // ]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      axios.get('http://localhost:3001/product')
+        .then(response => {
+          const result = response.data;
+          setProducts(result.data);
+          console.log('Products fetched successfully:', result.data);
+        })
+        .catch(error => {
+          console.error('Error fetching products:', error);
+        });
+    };
+    fetchProducts();
+  }, []);
 
   const categories = ['Tất cả', 'Mỳ', 'Bánh mì', 'Bánh tráng', 'Đồ uống', 'Cơm', 'Rau'];
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
