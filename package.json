@@ -1,0 +1,26 @@
+{
+  "name": "cnpm_2024_2025",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"cd frontend && npm start\" \"cd backend && npm run start:dev\"",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm run start:dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HoL0ngg/CNPM_2024_2025.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HoL0ngg/CNPM_2024_2025/issues"
+  },
+  "homepage": "https://github.com/HoL0ngg/CNPM_2024_2025#readme",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
