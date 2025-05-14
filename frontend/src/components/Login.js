@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
-function Login() {
+function Login({ onLoginSuccess }) {
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -28,12 +28,8 @@ function Login() {
         toast.error(result.message || "Đăng nhập thất bại");
       } else {
         toast.success(result.message);
-        console.log(result.message);
-        console.log(result.userData);
-
-        // Ví dụ: lưu token hoặc chuyển hướng
-        // localStorage.setItem('user', JSON.stringify(result.user));
-        // window.location.href = '/dashboard';
+        console.log("User nhận được từ server:", result.userData);
+        onLoginSuccess(result.userData); // ✅ Gọi đúng props
       }
     } catch (err) {
       toast.error("Lỗi kết nối đến server");

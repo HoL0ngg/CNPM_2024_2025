@@ -13,13 +13,16 @@ function App() {
     setUser(userData); // Lưu user sau khi đăng nhập thành công
   };
 
+  console.log(user);
+
   return (
     <div className="App">
       {!user ? (
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : (
         <>
-          <h3>Chào {user.username}</h3>
+          {/* <h3>Chào {user?.username || "Người dùng"}</h3> */}
+
           <FoodMenu />
         </>
       )}
