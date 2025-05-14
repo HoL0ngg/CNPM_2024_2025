@@ -1,0 +1,228 @@
+/* Main Layout */
+.main-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+/* App Bar Styling */
+.app-bar {
+  background-color: white !important;
+  color: #333 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+  z-index: 1201 !important;
+  height: 64px;
+}
+
+.app-title {
+  color: #ff5a5f;
+  font-weight: 700 !important;
+}
+
+/* Search Field */
+.search-field {
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 20px !important;
+  width: 250px;
+  margin-right: 16px !important;
+}
+
+.search-field .MuiOutlinedInput-root {
+  border-radius: 20px !important;
+}
+
+.search-field .MuiOutlinedInput-notchedOutline {
+  border-color: transparent !important;
+}
+
+.search-icon {
+  color: rgba(0, 0, 0, 0.54);
+}
+
+/* Avatar Container */
+.avatar-container {
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+.user-name {
+  margin-left: 8px;
+  font-weight: 600 !important;
+  color: #333;
+}
+
+/* Drawer Styling */
+.drawer {
+  width: 250px;
+  flex-shrink: 0;
+  transition: width 0.3s ease !important;
+}
+
+.drawer-paper {
+  width: 250px;
+  box-sizing: border-box;
+  background-color: #333 !important;
+  color: white;
+  border-right: none;
+  transition: width 0.3s ease !important;
+  overflow-x: hidden;
+}
+
+.drawer-list-item {
+  padding: 12px 20px !important;
+  border-radius: 8px !important;
+  margin: 8px 10px !important;
+  transition: all 0.3s ease !important;
+  display: flex;
+  align-items: center;
+}
+
+.drawer-list-item.active {
+  background-color: #ff5a5f !important;
+}
+
+.drawer-list-item:hover:not(.active) {
+  background-color: rgba(255, 90, 95, 0.15) !important;
+}
+
+.drawer-list-icon {
+  color: rgba(255, 255, 255, 0.8) !important;
+  min-width: 40px !important;
+  margin-right: 0 !important;
+}
+
+.active .drawer-list-icon {
+  color: white !important;
+}
+
+.drawer-list-text {
+  color: white !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+.drawer-divider {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  margin: 8px 16px !important;
+}
+
+/* Content Container */
+.content-container {
+  flex-grow: 1;
+  padding: 24px;
+  /* margin-top: 64px; */
+  transition: margin-left 0.3s ease !important;
+  min-height: calc(100vh - 64px);
+}
+
+/* Styles cho sidebar thu gọn */
+.drawer.collapsed {
+  width: 70px;
+}
+
+.drawer-paper.collapsed {
+  width: 70px !important;
+}
+
+.collapse-button {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  margin-bottom: 16px;
+}
+
+.collapse-button:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Điều chỉnh content container khi sidebar thu gọn */
+.content-container.sidebar-collapsed {
+  margin-left: 70px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .content-container {
+    margin-left: 0 !important;
+    padding: 16px;
+  }
+  
+  .search-field {
+    display: none;
+  }
+}
+
+/* Custom scrollbar for the sidebar */
+.drawer-paper::-webkit-scrollbar {
+  width: 5px;
+}
+
+.drawer-paper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.drawer-paper::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+}
+
+/* Table styling for customer management */
+.customer-table {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.customer-table .MuiTableHead-root {
+  background-color: #f5f5f5;
+}
+
+.customer-table .MuiTableCell-head {
+  font-weight: 600;
+  color: #555;
+}
+
+.customer-table .MuiTableRow-root:hover {
+  background-color: rgba(0, 0, 0, 0.01);
+}
+
+.action-button {
+  min-width: 0;
+  border-radius: 6px;
+  text-transform: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 12px;
+}
+
+.view-button {
+  background-color: rgba(25, 118, 210, 0.08);
+  color: #1976d2;
+}
+
+.view-button:hover {
+  background-color: rgba(25, 118, 210, 0.15);
+}
+
+.edit-button {
+  background-color: rgba(255, 90, 95, 0.08);
+  color: #ff5a5f;
+  margin-left: 8px;
+}
+
+.edit-button:hover {
+  background-color: rgba(255, 90, 95, 0.15);
+}
+
+.add-button {
+  background-color: #ff5a5f !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  box-shadow: 0 2px 8px rgba(255, 90, 95, 0.3) !important;
+}
+
+.add-button:hover {
+  background-color: #ff4449 !important;
+}
