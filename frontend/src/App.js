@@ -1,31 +1,18 @@
 import React, { useState } from "react";
-import FoodMenu from "./components/FoodMenu";
-import Login from "./components/Login"; // 👈 thêm dòng này
-import "./App.css";
-import "react-toastify/dist/ReactToastify.css";
+import AppRoutes from "./routes/AppRoutes";
 import { ToastContainer } from "react-toastify";
+import "./App.css";
 
 function App() {
   const [user, setUser] = useState(null);
 
   const handleLoginSuccess = (userData) => {
-    console.log("Data nhận được:", userData); // 👈 Kiểm tra tại đây
-    setUser(userData); // Lưu user sau khi đăng nhập thành công
+    setUser(userData);
   };
-
-  console.log(user);
 
   return (
     <div className="App">
-      {!user ? (
-        <Login onLoginSuccess={handleLoginSuccess} />
-      ) : (
-        <>
-          {/* <h3>Chào {user?.username || "Người dùng"}</h3> */}
-
-          <FoodMenu />
-        </>
-      )}
+      <AppRoutes user={user} onLoginSuccess={handleLoginSuccess} />
       <ToastContainer />
     </div>
   );

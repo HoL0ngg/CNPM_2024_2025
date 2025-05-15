@@ -37,27 +37,40 @@ function Login({ onLoginSuccess }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "auto" }}>
-      <h2>Đăng nhập</h2>
-      <input
-        type="text"
-        name="username"
-        placeholder="Tên đăng nhập"
-        value={formData.username}
-        onChange={handleChange}
-        required
-      />
-      <br />
-      <input
-        type="password"
-        name="password"
-        placeholder="Mật khẩu"
-        value={formData.password}
-        onChange={handleChange}
-        required
-      />
-      <br />
-      <button type="submit">Đăng nhập</button>
+    <form onSubmit={handleSubmit} className="frm-Login">
+      <div className="form-title">
+        <h2>ĐĂNG NHẬP</h2>
+      </div>
+
+      <div className="input-field">
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="username">
+          <i class="fa-solid fa-user"></i>Tên đăng nhập
+        </label>
+      </div>
+
+      <div className="input-field">
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+        <label htmlFor="password">
+          <i className="fa-solid fa-lock"></i> Mật khẩu
+        </label>
+      </div>
+
+      <div className="input-btn-wrapper">
+        <button type="submit">Đăng nhập</button>
+      </div>
     </form>
   );
 }

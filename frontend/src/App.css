@@ -1085,3 +1085,79 @@
 #checkout-confirm-btn:hover {
   background-color: #fa5663;
 }
+/* LOGIN */
+.form-title {
+  text-align: center;
+}
+.form-title h2 {
+  width: 90%;
+  margin: 20px auto;
+  color: #fa5663;
+}
+.input-field {
+  width: 100%;
+  margin-top: 20px;
+  position: relative;
+  text-align: center;
+}
+.input-field label {
+  position: absolute;
+  left: 32px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #606060;
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  font-size: 1.2rem;
+  background-color: white;
+  padding: 0px 4px;
+}
+
+.input-field input:focus + label,
+.input-field input:valid + label {
+  top: 0;
+  color: #fa5663;
+  font-size: 1rem;
+}
+
+.input-field input:focus {
+  outline-color: #fa5663;
+  background-color: white;
+}
+.input-field input[type="text"],
+input[type="password"] {
+  border-radius: 17px;
+  border: 2px solid #dadce0;
+  padding: 17px;
+  height: 50px;
+  width: 90%;
+  font-size: 1.1rem;
+}
+.input-btn-wrapper {
+  justify-self: center;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+.input-btn-wrapper button {
+  width: 200px;
+  height: 45px;
+  border-radius: 7px;
+  background-color: #ff4d4d;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+  margin-top: 10px;
+}
+.frm-Login {
+  border: 2px solid #ccc;
+  border-radius: 17px;
+  width: 30%;
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  padding-bottom: 10px;
+}
