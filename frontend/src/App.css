@@ -1085,3 +1085,42 @@
 #checkout-confirm-btn:hover {
   background-color: #fa5663;
 }
+
+.customer-info {
+  margin-bottom: 25px;
+}
+
+.customer-info h3 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #ff5a5f;
+  outline: none;
+}
+
+.payment-methods {
+  margin-top: 10px;
+}

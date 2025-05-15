@@ -6,6 +6,10 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showCheckoutContent, setShowCheckoutContent] = useState(true);
   const [paymentMethod, setPaymentMethod] = useState('');
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    phone: ''
+  });
 
   let subtotal = cartItems.reduce((sum, item) => {
     const toppingTotal = item.toppings?.reduce((sum, topping) => sum + topping.price, 0) || 0;
@@ -24,7 +28,62 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
     const method = e.target.value;  // Lấy giá trị của radio button được chọn
     setPaymentMethod(method);  // Cập nhật giá trị của paymentMethod khi người dùng chọn một option
   };
+
+  const handleCustomerInfoChange = (e) => {
+    const { name, value } = e.target;
+    // console.log(customerInfo);
+    setCustomerInfo(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+  };
+
   const handleConfirmCheckout = () => {
+    // console.log(customerInfo);
+
+    // Kiểm tra dữ liệu trước khi cho phép thanh toán
+    if (!customerInfo.name.trim()) {
+      toast.error("❌ Vui lòng nhập họ tên!", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    if (!customerInfo.phone.trim()) {
+      toast.error("❌ Vui lòng nhập số điện thoại!", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
+    // Kiểm tra định dạng số điện thoại (10 số, bắt đầu bằng 0)
+    const phoneRegex = /^0\d{9}$/;
+    if (!phoneRegex.test(customerInfo.phone)) {
+      toast.error("❌ Số điện thoại không hợp lệ!", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
     if (!paymentMethod) {
       toast.error("❌ Vui lòng chọn phương thức thanh toán!", {
         position: "top-right",
@@ -54,8 +113,33 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
           <h2>Thanh Toán</h2>
 
           <div className="checkout-sections">
-            <div className="left-section">
-              <form onSubmit={() => { }}>
+           <div className="left-section">
+              <form onSubmit={(e) => { e.preventDefault(); }}>
+                <div className="customer-info">
+                  <h3>Thông tin khách hàng</h3>
+                  <div className="form-group">
+                    <label htmlFor="name">Họ và tên</label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      placeholder="Nhập họ và tên của bạn"
+                      value={customerInfo.name}
+                      onChange={handleCustomerInfoChange}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label htmlFor="phone">Số điện thoại</label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      placeholder="Nhập số điện thoại của bạn"
+                      value={customerInfo.phone}
+                      onChange={handleCustomerInfoChange}
+                    />
+                  </div>
+                </div>
 
                 <div className="payment-methods">
                   <h3>Phương thức thanh toán</h3>
@@ -67,7 +151,7 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
                         name="paymentMethod"
                         value="cash"
                         checked={paymentMethod === 'cash'}
-                        onChange={(event) => { handlePaymentMethodChange(event) }}
+                        onChange={handlePaymentMethodChange}
                       />
                       <label htmlFor="cash">Tiền mặt khi nhận hàng</label>
                     </div>
@@ -79,7 +163,7 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
                         name="paymentMethod"
                         value="banking"
                         checked={paymentMethod === 'banking'}
-                        onChange={(event) => { handlePaymentMethodChange(event) }}
+                        onChange={handlePaymentMethodChange}
                       />
                       <label htmlFor="banking">Chuyển khoản ngân hàng</label>
                     </div>
@@ -91,7 +175,7 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
                         name="paymentMethod"
                         value="momo"
                         checked={paymentMethod === 'momo'}
-                        onChange={(event) => { handlePaymentMethodChange(event) }}
+                        onChange={handlePaymentMethodChange}
                       />
                       <label htmlFor="momo">Ví MoMo</label>
                     </div>
@@ -165,7 +249,8 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
             total={total}
             onCloseCheckoutConfirm={handleCloseConfirmModal}
             onOpenCheckoutContent={() => setShowCheckoutContent(true)}
-            paymentMethod={paymentMethod} 
+            paymentMethod={paymentMethod}
+            customerInfo={customerInfo} 
             onCloseCheckoutModal={onCloseCheckoutModal}
             handleOrderConfirmed={handleOrderConfirmed}
           />

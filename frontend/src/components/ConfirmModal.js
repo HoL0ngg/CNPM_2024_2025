@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
-const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm, onOpenCheckoutContent, paymentMethod, onCloseCheckoutModal, handleOrderConfirmed }) => {
+const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm, onOpenCheckoutContent, paymentMethod, customerInfo, onCloseCheckoutModal, handleOrderConfirmed }) => {
 
-  const handleCheckoutConfirm = () => {
+  console.log("cartItems", cartItems);
+  console.log("subtotal", subtotal);
+  console.log("tax", tax);
+  console.log("total", total);
+  console.log("paymentMethod", paymentMethod);
+  console.log("cusomerInfo", customerInfo);
+
+  const handleCheckoutConfirm = async () => {
     toast.success("Đơn hàng đã được xác nhận", {
       position: "top-center",
       autoClose: 3000,
@@ -14,7 +22,26 @@ const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm,
     // alert('Đơn đã được xác nhận!');
     onCloseCheckoutConfirm();
     onCloseCheckoutModal();
-    handleOrderConfirmed();
+    handleOrderConfirmed(); //set giỏ hàng thành mảng rỗng
+
+    const dataOrder = {
+      customer: {
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+      },
+      order: {
+        totalPrice: total + tax
+      },
+      detailOrder: cartItems
+    }
+
+    console.log(dataOrder);
+    let response = await axios.post('/order', dataOrder, {
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    console.log(response.data);
   }
 
   return (

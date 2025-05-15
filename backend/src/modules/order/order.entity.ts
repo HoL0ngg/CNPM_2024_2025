@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Customer } from '../customer/customer.entity';
+import { DetailOrder } from '../detail-order/detail-order.entity';
 
 @Entity('orders')
 export class Order {
@@ -6,17 +8,27 @@ export class Order {
   id: number;
 
   @Column()
-  userId: number;
-
-  @Column()
-  productId: number;
-
-  @Column()
-  quantity: number;
-
-  @Column()
   totalPrice: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  orderDate: Date;
+  created_at: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
+
+  @Column()
+  status: string;
+
+  @Column()
+  customerId: number;
+
+  @ManyToOne(() => Customer, (customer) => customer.orders, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'customerId' })
+  customer: Customer;
+
+  @OneToMany(() => DetailOrder, (detailOrder) => detailOrder.order)
+  detailOrders: DetailOrder[];
+
 }

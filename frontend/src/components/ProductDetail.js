@@ -1,13 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { toppings, dishToppingMap } from "../data/sideDishes";
+import axios from "axios";
+// import { toppings, dishToppingMap } from "../data/sideDishes";
 const ProductDetail = ({ product, addToCart, onClose }) => {
+  // console.log("ProductDetail", product);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedToppings, setSelectedToppings] = useState([]);
   const [totalPrice, setTotalPrice] = useState(product.price);
 
-  const availableToppings = toppings.filter((topping) =>
-    dishToppingMap[product.id]?.includes(topping.id)
-  );
+  const [availableToppings, setAvailableToppings] = useState([]);
+
+
+  const getToppingsByProduct = async () => {
+    const response = await axios.post("/product-topping", {productId: product.id}, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    let result = response.data;
+    // result = result.data;
+    // console.log(result);
+    const arrTopping = [];
+    result.forEach((item) => {
+      arrTopping.push(item.topping);
+    })
+    setAvailableToppings(arrTopping);
+  }
+
+  useEffect(() => {
+    getToppingsByProduct();
+  }, []);
+
   const handleToppingChange = (toppingId) => {
     setSelectedToppings((prev) =>
       prev.includes(toppingId)
@@ -19,14 +42,14 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
   // Tính tổng giá dựa trên số lượng và topping
   useEffect(() => {
     const toppingsPrice = selectedToppings.reduce((total, toppingId) => {
-      const topping = toppings.find((t) => t.id === toppingId);
+      const topping = availableToppings.find((t) => t.id === toppingId);
       return total + (topping ? topping.price : 0);
     }, 0);
     setTotalPrice((product.price + toppingsPrice) * quantity);
   }, [selectedToppings, quantity, product.price]);
 
   const handleAddToCart = () => {
-    const selectedToppingsDetail = toppings
+    const selectedToppingsDetail = availableToppings
       .filter((topping) => selectedToppings.includes(topping.id))
       .map((topping) => ({
         id: topping.id,

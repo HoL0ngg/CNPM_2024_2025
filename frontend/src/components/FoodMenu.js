@@ -15,6 +15,7 @@ import cocacola from "../assets/images/cocacola.png";
 import banhtrangtron from "../assets/images/banhtrangtron.png";
 import mixao from "../assets/images/mixao.png";
 import welcome from "../assets/images/welcome.png";
+import axios from "axios";
 
 const FoodMenu = () => {
   // const [cartItems, setCartItems] = useState([
@@ -26,64 +27,65 @@ const FoodMenu = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setselectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [foodItems, setFoodItems] = useState([]);
 
   const handleOrderConfirmed = () => {
     setCartItems([]);
   }
 
-  const foodItems = [
-    {
-      id: 1,
-      name: "Bánh burger",
-      price: 25000,
-      category: "burger",
-      imgUrl: burger,
-    },
-    {
-      id: 2,
-      name: "Nước ngọt",
-      price: 15000,
-      category: "drink",
-      imgUrl: cocacola,
-    },
-    {
-      id: 3,
-      name: "Mỳ ý",
-      price: 30000,
-      category: "spagetti",
-      imgUrl: miy,
-    },
-    {
-      id: 4,
-      name: "Bánh tráng trộn",
-      price: 10000,
-      category: "banhtrangtron",
-      imgUrl: banhtrangtron,
-    },
-    {
-      id: 5,
-      name: "Nước cam",
-      price: 20000,
-      category: "drink",
-      imgUrl: nuoccam,
-    },
-    {
-      id: 6,
-      name: "Mỳ xào",
-      price: 20000,
-      category: "spagetti",
-      imgUrl: mixao,
-    },
-  ];
-
-  const categories = [
-    { id: 0, name: "all", label: "Tất cả", imgUrl: welcome },
-    { id: 1, name: "burger", label: "Burger", imgUrl: burger },
-    { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
-    { id: 3, name: "spagetti", label: "Mỳ", imgUrl: miy },
-    { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
-    { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
-  ];
+  // const foodItems = [
+  //   {
+  //     id: 1,
+  //     name: "Bánh burger",
+  //     price: 25000,
+  //     category: "burger",
+  //     imgUrl: burger,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Nước ngọt",
+  //     price: 15000,
+  //     category: "drink",
+  //     imgUrl: cocacola,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "Mỳ ý",
+  //     price: 30000,
+  //     category: "spagetti",
+  //     imgUrl: miy,
+  //   },
+  //   {
+  //     id: 4,
+  //     name: "Bánh tráng trộn",
+  //     price: 10000,
+  //     category: "banhtrangtron",
+  //     imgUrl: banhtrangtron,
+  //   },
+  //   {
+  //     id: 5,
+  //     name: "Nước cam",
+  //     price: 20000,
+  //     category: "drink",
+  //     imgUrl: nuoccam,
+  //   },
+  //   {
+  //     id: 6,
+  //     name: "Mỳ xào",
+  //     price: 20000,
+  //     category: "spagetti",
+  //     imgUrl: mixao,
+  //   },
+  // ];
+  
+  // const categories = [
+  //   { id: 0, name: "all", label: "Tất cả", imgUrl: welcome },
+  //   { id: 1, name: "burger", label: "Burger", imgUrl: burger },
+  //   { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
+  //   { id: 3, name: "spagetti", label: "Mỳ", imgUrl: miy },
+  //   { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
+  //   { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
+  // ];
 
   const addToCart = (item) => {
     const existingItem = cartItems.find((cartItem) => {
@@ -142,7 +144,23 @@ const FoodMenu = () => {
       searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+  const getFoodItems = async () => {
+    const response = await axios.get("/product");
+    const result = response.data;
+    console.log(result);
+    setFoodItems(result.data);
+  }
 
+  useEffect(() => {
+    getFoodItems();
+  }, []);
+
+  const categories = [];
+  foodItems.forEach((item) => {
+    if (!categories.includes(item.categoryId)) {
+      categories.push(item.categoryId);
+    }
+  });
 
   return (
     <div className="food-menu">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { 
   Typography, Paper, Box, TextField, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -7,41 +7,40 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
+import '../css/product.css';
 
 const Product = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState([]);
+  const categories = [];
 
-  // Sample product data
-  // const [products, setProducts] = useState([
-  //   { id: 1, name: 'Mỳ ý', category: 'Mỳ', price: '30.000đ', stock: 45, image: 'my_y.jpg' },
-  //   { id: 2, name: 'Burger', category: 'Bánh mì', price: '25.000đ', stock: 36, image: 'burger.jpg' },
-  //   { id: 3, name: 'Bánh tráng trộn', category: 'Bánh tráng', price: '10.000đ', stock: 60, image: 'banh_trang.jpg' },
-  //   { id: 4, name: 'Nước ngọt', category: 'Đồ uống', price: '15.000đ', stock: 100, image: 'nuoc_ngot.jpg' },
-  //   { id: 5, name: 'Mỳ xào', category: 'Mỳ', price: '20.000đ', stock: 40, image: 'my_xao.jpg' },
-  //   { id: 6, name: 'Cơm chiên', category: 'Cơm', price: '22.000đ', stock: 30, image: 'com_chien.jpg' },
-  //   { id: 7, name: 'Trà sữa', category: 'Đồ uống', price: '18.000đ', stock: 50, image: 'tra_sua.jpg' },
-  //   { id: 8, name: 'Salad', category: 'Rau', price: '35.000đ', stock: 25, image: 'salad.jpg' },
-  // ]);
+   // State và các hàm hiện tại
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+  const fileInputRef = useRef(null);
+  // Thêm state mới cho dialog món ăn phụ
+  const [openToppingDialog, setOpenToppingDialog] = useState(false);
+  const [selectedTopping, setSelectedTopping] = useState(null);
+  const [toppingImageFile, setToppingImageFile] = useState(null);
+  const toppingFileInputRef = useRef(null);
+  
+  // Xử lý khi chọn file
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setImageFile(file);
+      
+      // Tạo URL preview cho hình ảnh đã chọn
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      axios.get('http://localhost:3001/product')
-        .then(response => {
-          const result = response.data;
-          setProducts(result.data);
-          console.log('Products fetched successfully:', result.data);
-        })
-        .catch(error => {
-          console.error('Error fetching products:', error);
-        });
-    };
-    fetchProducts();
-  }, []);
-
-  const categories = ['Tất cả', 'Mỳ', 'Bánh mì', 'Bánh tráng', 'Đồ uống', 'Cơm', 'Rau'];
   const [selectedCategory, setSelectedCategory] = useState('Tất cả');
 
   const handleOpenDialog = (product = null) => {
@@ -71,6 +70,115 @@ const Product = () => {
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
+  const getProducts = async () => {
+    const repsonse = await axios.get('/product');
+    const result = repsonse.data;
+    setProducts(result.data);
+  }
+
+  useEffect(() => {
+    getProducts();  
+  }, []);
+
+  products.forEach(product => {
+    if (!categories.includes(product.categoryId)) {
+      categories.push(product.categoryId);
+    }
+  });
+
+  const handleSubmit = async (event) => {
+    const formData = new FormData();
+    formData.append('file', imageFile);
+    //post ảnh lên api để lưu vào folder uploads của backend
+    let response = await axios.post('/product/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    const imageName = response.data.filename;
+
+    const data = {
+      name: event.target.name.value,
+      category: event.target.category.value,
+      price: event.target.price.value,
+      quantity: event.target.quantity.value,
+      description: event.target.description.value,
+      image: imageName,
+    }
+    console.log(data);
+    let repsonse = await axios.post('/product', data);
+    const result = repsonse.data;
+  }
+
+  // Hàm mở dialog topping
+  const handleOpenDialogTopping = (topping = null) => {
+    setSelectedTopping(topping);
+    setOpenToppingDialog(true);
+  };
+
+  // Hàm đóng dialog topping
+  const handleCloseToppingDialog = () => {
+    setOpenToppingDialog(false);
+    setSelectedTopping(null);
+    setToppingImageFile(null);
+    if (toppingFileInputRef.current) {
+      toppingFileInputRef.current.value = '';
+    }
+  };
+
+  // Xử lý khi chọn file hình ảnh topping
+  const handleToppingImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setToppingImageFile(file);
+    }
+  };
+
+  // Hàm submit form topping
+  const handleSubmitTopping = async (event) => {
+    event.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('file', toppingImageFile);
+    
+    try {
+      let imageName = null;
+      if (toppingImageFile) {
+        let response = await axios.post('/topping/image', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        imageName = response.data.filename;
+      }
+      
+      const data = {
+        name: event.target.name.value,
+        price: event.target.price.value,
+        image: imageName
+      };
+      
+      // Gửi request API
+      if (selectedTopping) {
+        // Cập nhật topping
+        await axios.put(`/topping/${selectedTopping.id}`, data);
+      } else {
+        // Thêm topping mới
+        await axios.post('/topping', data);
+      }
+      
+      // Đóng dialog và reset state
+      handleCloseToppingDialog();
+      
+      // Có thể thêm thông báo thành công ở đây
+      
+    } catch (error) {
+      console.error('Error saving topping:', error);
+      // Có thể thêm thông báo lỗi ở đây
+    }
+  }
+
 
   return (
     <>
@@ -104,13 +212,27 @@ const Product = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 label="Danh mục"
               >
-                {categories.map((category) => (
-                  <MenuItem key={category} value={category}>{category}</MenuItem>
-                ))}
+                <MenuItem value="Tất cả">Tất cả</MenuItem>
+                {categories.map((category) => {
+                  // console.log(category);
+                  return <MenuItem key={category} value={category}>{category}</MenuItem>;
+                })}
               </Select>
             </FormControl>
           </Box>
           
+          <Button 
+            variant="contained" 
+            startIcon={<AddIcon />}
+            onClick={() => handleOpenDialogTopping()}
+            sx={{ 
+              bgcolor: '#ff5a5f', 
+              '&:hover': { bgcolor: '#e0484d' }
+            }}
+          >
+            Thêm món ăn phụ
+          </Button>
+
           <Button 
             variant="contained" 
             startIcon={<AddIcon />}
@@ -154,17 +276,17 @@ const Product = () => {
                       }}
                     >
                       <img 
-                        src={`/images/${product.image}`} 
+                        src={`http://localhost:3001/uploads/images/${product.image}`}
                         alt={product.name} 
                         style={{ maxWidth: '100%', maxHeight: '100%' }}
-                        onError={(e) => { e.target.src = '/images/placeholder.jpg' }}
+      
                       />
                     </Box>
                   </TableCell>
                   <TableCell>{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
+                  <TableCell>{product.categoryId}</TableCell>
                   <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.quantity}</TableCell>
                   <TableCell align="right">
                     <Button 
                       size="small" 
@@ -195,80 +317,190 @@ const Product = () => {
       
       {/* Add/Edit Product Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
+        <DialogTitle className="dialog-title">
           {selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
         </DialogTitle>
-        <form onSubmit={handleSaveProduct}>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmit(e);
+        }}>
           <DialogContent>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
                   label="Tên sản phẩm"
+                  name="name"
                   required
                   defaultValue={selectedProduct?.name || ''}
+                  className="input-field"
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <FormControl fullWidth required>
                   <InputLabel>Danh mục</InputLabel>
                   <Select
+                    name="category"
                     label="Danh mục"
-                    defaultValue={selectedProduct?.category || ''}
+                    defaultValue={selectedProduct?.categoryId || 'Tất cả'}
                   >
-                    {categories.filter(c => c !== 'Tất cả').map((category) => (
+                    <MenuItem value="Tất cả">Tất cả</MenuItem>
+                    {categories.map((category) => (
                       <MenuItem key={category} value={category}>{category}</MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={7}>
                 <TextField
                   fullWidth
+                  name="price"
                   label="Giá"
                   required
                   type="text"
                   defaultValue={selectedProduct?.price || ''}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+                  }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={5}>
                 <TextField
                   fullWidth
-                  label="Tồn kho"
+                  name="quantity"
+                  label="Số lượng"
                   type="number"
                   required
-                  defaultValue={selectedProduct?.stock || ''}
+                  defaultValue={selectedProduct?.quantity || ''}
                 />
               </Grid>
-              <Grid item xs={6}>
-                <TextField
+              <Grid item xs={7}>
+                <Button 
+                  variant="outlined" 
+                  component="label"
                   fullWidth
-                  label="Hình ảnh"
-                  defaultValue={selectedProduct?.image || ''}
-                />
+                  startIcon={<AddIcon />}
+                  className="upload-button"
+                >
+                  Chọn hình ảnh
+                  <input
+                    accept="image/*"
+                    type="file"
+                    hidden
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                  />
+                </Button>
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   fullWidth
+                  name="description"
                   label="Mô tả"
                   multiline
                   rows={4}
+                  defaultValue={selectedProduct?.description || ''}
+                  className="multiline-input"
                 />
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseDialog} color="inherit">Hủy</Button>
+          <DialogActions className="dialog-actions">
+            <Button onClick={handleCloseDialog} className="cancel-button">Hủy</Button>
             <Button 
               type="submit"
               variant="contained" 
-              sx={{ bgcolor: '#ff5a5f', '&:hover': { bgcolor: '#e0484d' } }}
+              className="save-button"
             >
               {selectedProduct ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
+
+      {/* Add/Edit Topping Dialog */}
+      <Dialog open={openToppingDialog} onClose={handleCloseToppingDialog} maxWidth="sm" fullWidth>
+        <DialogTitle className="dialog-title">
+          {selectedTopping ? 'Chỉnh sửa món ăn phụ' : 'Thêm món ăn phụ'}
+        </DialogTitle>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmitTopping(e);
+        }}>
+          <DialogContent>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Tên món ăn phụ"
+                  name="name"
+                  required
+                  defaultValue={selectedTopping?.name || ''}
+                  className="input-field"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name="price"
+                  label="Giá"
+                  required
+                  type="text"
+                  defaultValue={selectedTopping?.price || ''}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button 
+                  variant="outlined" 
+                  component="label"
+                  fullWidth
+                  startIcon={<AddIcon />}
+                  className="upload-button"
+                >
+                  Chọn hình ảnh
+                  <input
+                    accept="image/*"
+                    type="file"
+                    hidden
+                    ref={toppingFileInputRef}
+                    onChange={handleToppingImageChange}
+                    name="image"
+                  />
+                </Button>
+              </Grid>
+              
+              {selectedTopping && selectedTopping.image && !toppingImageFile && (
+                <Grid item xs={12}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    gap: 1,
+                    fontSize: '0.875rem',
+                    color: 'text.secondary' 
+                  }}>
+                    <span>Hình ảnh hiện tại:</span>
+                    <span>{selectedTopping.image}</span>
+                  </Box>
+                </Grid>
+              )}
+            </Grid>
+          </DialogContent>
+          <DialogActions className="dialog-actions">
+            <Button onClick={handleCloseToppingDialog} className="cancel-button">Hủy</Button>
+            <Button 
+              type="submit"
+              variant="contained" 
+              className="save-button"
+            >
+              {selectedTopping ? 'Lưu thay đổi' : 'Thêm món ăn phụ'}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
     </>
   );
 };
