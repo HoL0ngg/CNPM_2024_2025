@@ -22,8 +22,5 @@
   "description": "",
   "devDependencies": {
     "concurrently": "^8.2.2"
-  },
-  "dependencies": {
-    "react-router-dom": "^6.23.0"
   }
 }
