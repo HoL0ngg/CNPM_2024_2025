@@ -1,12 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { join } from 'path';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  @Get('admin/*')
+  serveAdminApp(@Res() res: Response) {
+    res.sendFile(join(__dirname, '..', 'public', 'fe-admin', 'build'));
+  }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('*')
+  serveApp(@Res() res: Response) {
+    // Kiểm tra để không xử lý các API routes
+    if (!res.req.url.startsWith('/api') && !res.req.url.startsWith('/uploads')) {
+      res.sendFile(join(__dirname, '..', 'public', 'fe-customer', 'build'));
+    }
   }
 }

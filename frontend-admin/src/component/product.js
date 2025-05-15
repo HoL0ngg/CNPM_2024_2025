@@ -64,12 +64,16 @@ const Product = () => {
     setProducts(products.filter(product => product.id !== id));
   };
 
-  const filteredProducts = products.filter(product => {
-    return (
-      (selectedCategory === 'Tất cả' || product.category === selectedCategory) &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  let filteredProducts = [];
+  
+  if(products.length !== 0) {
+    filteredProducts = products.filter(product => {
+      return (
+        (selectedCategory === 'Tất cả' || product.category === selectedCategory) &&
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    });
+  }
 
   const getProducts = async () => {
     const repsonse = await axios.get('/product');

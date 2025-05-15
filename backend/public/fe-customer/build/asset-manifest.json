@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.cb1d9ca8.css",
-    "main.js": "/static/js/main.b516b280.js",
+    "main.css": "/static/css/main.8bdb3c9f.css",
+    "main.js": "/static/js/main.1c21ba9e.js",
     "static/media/ga_ran.png": "/static/media/ga_ran.c6b37f151caa706c2e92.png",
     "static/media/nuoc_ngot.png": "/static/media/nuoc_ngot.8738be513c7e4727f3dd.png",
     "static/media/banhtrangtron.png": "/static/media/banhtrangtron.e974969e34639a70fa21.png",
@@ -16,18 +16,15 @@
     "static/media/welcome.png": "/static/media/welcome.11a467a21dcec0d12daf.png",
     "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.c210719e60948b211a12.woff2",
     "static/media/fa-regular-400.ttf": "/static/media/fa-regular-400.914997e1bdfc990d0897.ttf",
-    "static/media/cheese.png": "/static/media/cheese.322f1bf4ee83edbf899c.png",
-    "static/media/chickentopping.png": "/static/media/chickentopping.06a74dbf1b435db34fbf.png",
     "static/media/fa-regular-400.woff2": "/static/media/fa-regular-400.89999bdf5d835c012025.woff2",
-    "static/media/omelette.png": "/static/media/omelette.c5122f974f79055f4043.png",
     "static/media/fa-v4compatibility.ttf": "/static/media/fa-v4compatibility.da94ef451f4969af06e6.ttf",
     "static/media/fa-v4compatibility.woff2": "/static/media/fa-v4compatibility.ea8f94e1d22e0d35ccd4.woff2",
     "index.html": "/index.html",
-    "main.cb1d9ca8.css.map": "/static/css/main.cb1d9ca8.css.map",
-    "main.b516b280.js.map": "/static/js/main.b516b280.js.map"
+    "main.8bdb3c9f.css.map": "/static/css/main.8bdb3c9f.css.map",
+    "main.1c21ba9e.js.map": "/static/js/main.1c21ba9e.js.map"
   },
   "entrypoints": [
-    "static/css/main.cb1d9ca8.css",
-    "static/js/main.b516b280.js"
+    "static/css/main.8bdb3c9f.css",
+    "static/js/main.1c21ba9e.js"
   ]
 }

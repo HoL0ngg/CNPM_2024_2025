@@ -13,45 +13,26 @@ import {
   Cancel as CancelIcon,
   LocalShipping as ShippingIcon
 } from '@mui/icons-material';
+import axios from 'axios';
+import '../css/detailOrder.css';
 
 const Order = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('all');
+  const [status, setStatus] = useState('');
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [tabValue, setTabValue] = useState(0);
+  const [orders, setOrders] = useState([]);
 
-  // Sample orders data
-  const orders = [
-    { id: '#ORD001', customer: 'Nguyễn Văn A', date: '14/05/2025', status: 'completed', total: '120.000đ', phone: '0901234567', address: '123 Nguyễn Huệ, Q.1, TP.HCM', items: [
-      { id: 1, name: 'Mỳ ý', quantity: 2, price: '30.000đ' },
-      { id: 4, name: 'Nước ngọt', quantity: 2, price: '15.000đ' }
-    ] },
-    { id: '#ORD002', customer: 'Trần Thị B', date: '14/05/2025', status: 'shipping', total: '85.000đ', phone: '0912345678', address: '456 Lê Lợi, Q.1, TP.HCM', items: [
-      { id: 2, name: 'Burger', quantity: 2, price: '25.000đ' },
-      { id: 4, name: 'Nước ngọt', quantity: 1, price: '15.000đ' }
-    ] },
-    { id: '#ORD003', customer: 'Lê Văn C', date: '13/05/2025', status: 'completed', total: '210.000đ', phone: '0923456789', address: '789 Hai Bà Trưng, Q.3, TP.HCM', items: [
-      { id: 5, name: 'Mỳ xào', quantity: 3, price: '20.000đ' },
-      { id: 6, name: 'Cơm chiên', quantity: 2, price: '22.000đ' },
-      { id: 7, name: 'Trà sữa', quantity: 3, price: '18.000đ' }
-    ] },
-    { id: '#ORD004', customer: 'Phạm Thị D', date: '13/05/2025', status: 'cancelled', total: '150.000đ', phone: '0934567890', address: '101 Võ Văn Tần, Q.3, TP.HCM', items: [
-      { id: 8, name: 'Salad', quantity: 3, price: '35.000đ' },
-      { id: 7, name: 'Trà sữa', quantity: 1, price: '18.000đ' }
-    ] },
-    { id: '#ORD005', customer: 'Hoàng Văn E', date: '12/05/2025', status: 'completed', total: '95.000đ', phone: '0945678901', address: '202 Điện Biên Phủ, Q.Bình Thạnh, TP.HCM', items: [
-      { id: 3, name: 'Bánh tráng trộn', quantity: 3, price: '10.000đ' },
-      { id: 4, name: 'Nước ngọt', quantity: 2, price: '15.000đ' },
-      { id: 7, name: 'Trà sữa', quantity: 1, price: '18.000đ' }
-    ] },
-    { id: '#ORD006', customer: 'Tạ Văn F', date: '12/05/2025', status: 'pending', total: '88.000đ', phone: '0956789012', address: '303 Cách Mạng Tháng Tám, Q.10, TP.HCM', items: [
-      { id: 6, name: 'Cơm chiên', quantity: 4, price: '22.000đ' }
-    ] },
-  ];
+  const getData = async () => {
+    const reponse = await axios.get('/order');
+    const result = reponse.data;
+    console.log(result.data);
+    setOrders(result.data);
+  }
 
   useEffect(() => {
-    
+    getData();
   }, []);
 
   const handleOpenDialog = (order) => {
@@ -70,21 +51,82 @@ const Order = () => {
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'completed': return { color: 'success', text: 'Đã giao' };
-      case 'shipping': return { color: 'info', text: 'Đang giao' };
-      case 'pending': return { color: 'warning', text: 'Chờ xử lý' };
-      case 'cancelled': return { color: 'error', text: 'Đã hủy' };
+      case 'Đã hoàn thành': return { color: 'success', text: 'Đã hoàn thành' };
+      case 'Đang nấu': return { color: 'info', text: 'Đang nấu' };
+      case 'Chờ xử lý': return { color: 'warning', text: 'Chờ xử lý' };
+      case 'Đã hủy': return { color: 'error', text: 'Đã hủy' };
       default: return { color: 'default', text: status };
     }
   };
 
   const filteredOrders = orders.filter(order => {
-    return (
-      (status === 'all' || order.status === status) &&
-      (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-       order.customer.toLowerCase().includes(searchTerm.toLowerCase()))
+  
+    const statusMatch = status === '' ? true : order.status === status;
+
+    const searchTermMatch = searchTerm === '' ? true : (
+      order.id.toString().includes(searchTerm) ||
+      order.customer?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer?.phone?.includes(searchTerm)
     );
+    
+    return statusMatch && searchTermMatch;
   });
+
+  const processOrderDetails = (detailOrders) => {
+    // Tạo một object để nhóm các chi tiết theo productId
+    const groupedItems = {};
+    
+    // Nhóm các chi tiết theo productId
+    detailOrders.forEach(item => {
+      const key = item.productId;
+      
+      if (!groupedItems[key]) {
+        // Nếu sản phẩm chưa tồn tại trong nhóm, tạo mới
+        groupedItems[key] = {
+          productId: item.productId,
+          productName: item.product.name,
+          quantity: item.quantityProduct,
+          price: item.priceProduct,
+          baseTotal: item.priceProduct * item.quantityProduct,
+          toppings: []
+        };
+      }
+      
+      // Nếu không phải dummy topping (toppingId = 0)
+      if (item.toppingId !== 0) {
+        // Thêm topping vào sản phẩm
+        groupedItems[key].toppings.push({
+          id: item.toppingId,
+          name: item.topping.name,
+          price: item.priceTopping
+        });
+      }
+    });
+    
+    // Chuyển đổi object thành mảng để render
+    return Object.values(groupedItems);
+  };
+
+  const handleUpdate = async (order) => {
+    const response = await axios.put(`/order`, order, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response.data);
+    getData();
+    
+  }
+
+  const handleCancel = async (order) => {
+   const response = await axios.put(`/order/cancel`, order, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response.data);
+    getData();
+  }
 
   return (
     <>
@@ -105,11 +147,11 @@ const Order = () => {
               },
             }}
           >
-            <Tab label="Tất cả đơn hàng" onClick={() => setStatus('all')} />
-            <Tab label="Chờ xử lý" onClick={() => setStatus('pending')} />
-            <Tab label="Đang giao" onClick={() => setStatus('shipping')} />
-            <Tab label="Đã giao" onClick={() => setStatus('completed')} />
-            <Tab label="Đã hủy" onClick={() => setStatus('cancelled')} />
+            <Tab label="Tất cả đơn hàng" onClick={() => setStatus('')} />
+            <Tab label="Chờ xử lý" onClick={() => setStatus('Chờ xử lý')} />
+            <Tab label="Đang nấu" onClick={() => setStatus('Đang nấu')} />
+            <Tab label="Đã hoàn thành" onClick={() => setStatus('Đã hoàn thành')} />
+            <Tab label="Đã hủy" onClick={() => setStatus('Đã hủy')} />
           </Tabs>
         </Box>
         
@@ -147,8 +189,8 @@ const Order = () => {
               {filteredOrders.map((order) => (
                 <TableRow key={order.id}>
                   <TableCell>{order.id}</TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell>{order.date}</TableCell>
+                  <TableCell>{order.customer.name}</TableCell>
+                  <TableCell>{order.created_at}</TableCell>
                   <TableCell>
                     <Chip 
                       label={getStatusColor(order.status).text}
@@ -156,7 +198,7 @@ const Order = () => {
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>{order.total}</TableCell>
+                  <TableCell>{order.totalPrice}</TableCell>
                   <TableCell align="right">
                     <Button 
                       size="small" 
@@ -168,36 +210,39 @@ const Order = () => {
                       Chi tiết
                     </Button>
                     
-                    {order.status === 'pending' && (
+                    {order.status === 'Chờ xử lý' && (
                       <Button 
                         size="small" 
                         variant="contained" 
                         color="primary"
                         startIcon={<ShippingIcon />}
                         sx={{ mr: 1 }}
+                        onClick = {() => handleUpdate(order)}
                       >
-                        Giao hàng
+                        Chấp nhận
                       </Button>
                     )}
                     
-                    {(order.status === 'pending' || order.status === 'shipping') && (
+                    {(order.status === 'Chờ xử lý' || order.status === 'Đang nấu') && (
                       <Button 
                         size="small" 
                         variant="contained" 
                         color="error"
                         startIcon={<CancelIcon />}
+                        onClick ={() => handleCancel(order)}
                       >
                         Hủy
                       </Button>
                     )}
                     
-                    {order.status === 'shipping' && (
+                    {order.status === 'Đang nấu' && (
                       <Button 
                         size="small" 
                         variant="contained" 
                         color="success"
                         startIcon={<CheckCircleIcon />}
                         sx={{ mr: 1 }}
+                        onClick = {() => handleUpdate(order)}
                       >
                         Hoàn tất
                       </Button>
@@ -211,66 +256,115 @@ const Order = () => {
       </Paper>
       
       {/* Order Detail Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
+      <Dialog 
+        open={openDialog} 
+        onClose={handleCloseDialog} 
+        maxWidth="md" 
+        fullWidth
+        className="order-detail-dialog"
+        sx={{
+          '& .MuiDialog-paper': {
+            display: 'flex',
+            flexDirection: 'column',
+            maxHeight: '85vh',
+          }
+        }}
+      >
         <DialogTitle>
           Chi tiết đơn hàng {selectedOrder?.id}
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ 
+          overflow: 'auto', 
+          display: 'flex',
+          flexDirection: 'column',
+          paddingBottom: 0,
+          flex: 1
+        }}>
           {selectedOrder && (
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Typography variant="subtitle1" fontWeight="bold">Thông tin khách hàng</Typography>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body1"><strong>Tên:</strong> {selectedOrder.customer}</Typography>
-                  <Typography variant="body1"><strong>Điện thoại:</strong> {selectedOrder.phone}</Typography>
-                  <Typography variant="body1"><strong>Địa chỉ:</strong> {selectedOrder.address}</Typography>
+                <Box className="customer-info-section">
+                  <Typography variant="subtitle1" className="info-title">Thông tin khách hàng</Typography>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Tên:</span> {selectedOrder.customer.name}
+                    </Typography>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Điện thoại:</span> {selectedOrder.customer.phone}
+                    </Typography>
+                  </Box>
                 </Box>
               </Grid>
               
               <Grid item xs={6}>
-                <Typography variant="subtitle1" fontWeight="bold">Thông tin đơn hàng</Typography>
-                <Box sx={{ mt: 2 }}>
-                  <Typography variant="body1">
-                    <strong>Trạng thái:</strong> 
-                    <Chip 
-                      label={getStatusColor(selectedOrder.status).text}
-                      color={getStatusColor(selectedOrder.status).color}
-                      size="small"
-                      sx={{ ml: 1 }}
-                    />
-                  </Typography>
-                  <Typography variant="body1"><strong>Ngày đặt:</strong> {selectedOrder.date}</Typography>
-                  <Typography variant="body1"><strong>Tổng tiền:</strong> {selectedOrder.total}</Typography>
+                <Box className="order-info-section">
+                  <Typography variant="subtitle1" className="info-title">Thông tin đơn hàng</Typography>
+                  <Box sx={{ mt: 2 }}>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Trạng thái:</span> 
+                      <Chip 
+                        label={getStatusColor(selectedOrder.status).text}
+                        color={getStatusColor(selectedOrder.status).color}
+                        size="small"
+                        sx={{ ml: 1 }}
+                      />
+                    </Typography>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Ngày đặt:</span> {selectedOrder.created_at}
+                    </Typography>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Ngày cập nhật:</span> {selectedOrder.updated_at}
+                    </Typography>
+                    <Typography variant="body1" className="info-row">
+                      <span className="info-label">Tổng tiền:</span> {selectedOrder.totalPrice}đ
+                    </Typography>
+                  </Box>
                 </Box>
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid item xs={12} className="product-details-section">
                 <Divider sx={{ my: 2 }} />
-                <Typography variant="subtitle1" fontWeight="bold">Chi tiết sản phẩm</Typography>
-                <TableContainer sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" className="product-details-title">Chi tiết sản phẩm</Typography>
+                <TableContainer sx={{ mt: 2 }} className="product-table">
                   <Table size="small">
-                    <TableHead>
+                    <TableHead className="table-header">
                       <TableRow>
-                        <TableCell>Sản phẩm</TableCell>
-                        <TableCell align="center">Số lượng</TableCell>
-                        <TableCell align="right">Giá</TableCell>
-                        <TableCell align="right">Thành tiền</TableCell>
+                        <TableCell className="table-header-cell">Sản phẩm</TableCell>
+                        <TableCell align="center" className="table-header-cell">Số lượng</TableCell>
+                        <TableCell align="right" className="table-header-cell">Giá</TableCell>
+                        <TableCell align="right" className="table-header-cell">Thành tiền</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {selectedOrder.items.map((item) => (
-                        <TableRow key={item.id}>
-                          <TableCell>{item.name}</TableCell>
-                          <TableCell align="center">{item.quantity}</TableCell>
-                          <TableCell align="right">{item.price}</TableCell>
-                          <TableCell align="right">
-                            {parseFloat(item.price.replace('.', '').replace('đ', '')) * item.quantity + 'đ'}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                      <TableRow>
-                        <TableCell colSpan={3} align="right"><strong>Tổng cộng</strong></TableCell>
-                        <TableCell align="right"><strong>{selectedOrder.total}</strong></TableCell>
+                      {processOrderDetails(selectedOrder.detailOrders).map((item, index) => {
+                        // Tính tổng giá topping
+                        const toppingTotal = item.toppings.reduce((sum, topping) => sum + topping.price, 0);
+                        // Tính tổng tiền cho mỗi sản phẩm (bao gồm topping)
+                        const itemTotal = item.price * item.quantity + toppingTotal * item.quantity;
+                        
+                        return (
+                          <TableRow key={`${item.productId}-${index}`}>
+                            <TableCell className="product-cell">
+                              <div className="product-name">{item.productName}</div>
+                              {item.toppings.length > 0 && (
+                                <div className="topping-list">
+                                  {item.toppings.map((topping, idx) => (
+                                    <div key={`${topping.id}-${idx}`} className="topping-item">
+                                      {topping.name}: {topping.price}đ
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell align="center" className="quantity-cell">{item.quantity}</TableCell>
+                            <TableCell align="right" className="price-cell">{item.price}đ</TableCell>
+                            <TableCell align="right" className="total-cell">{itemTotal}đ</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      <TableRow className="order-total-row">
+                        <TableCell colSpan={3} align="right" className="order-total-cell">Tổng cộng</TableCell>
+                        <TableCell align="right" className="order-total-amount">{selectedOrder.totalPrice}đ</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -279,8 +373,8 @@ const Order = () => {
             </Grid>
           )}
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="inherit">Đóng</Button>
+        <DialogActions className="dialog-actions">
+          <Button onClick={handleCloseDialog} color="inherit" className="action-button">Đóng</Button>
           
           {selectedOrder?.status === 'pending' && (
             <>
@@ -288,6 +382,7 @@ const Order = () => {
                 variant="contained" 
                 color="primary"
                 startIcon={<ShippingIcon />}
+                className="action-button"
               >
                 Giao hàng
               </Button>
@@ -295,6 +390,7 @@ const Order = () => {
                 variant="contained" 
                 color="error"
                 startIcon={<CancelIcon />}
+                className="action-button"
               >
                 Hủy đơn
               </Button>
@@ -306,6 +402,7 @@ const Order = () => {
               variant="contained" 
               color="success"
               startIcon={<CheckCircleIcon />}
+              className="action-button"
             >
               Hoàn tất đơn hàng
             </Button>

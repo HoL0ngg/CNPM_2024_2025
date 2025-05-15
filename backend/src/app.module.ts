@@ -17,6 +17,7 @@ import { ToppingModule } from './modules/topping/topping.module';
 import { ProductToppingModule } from './modules/product_topping/product_topping.module';
 import { CustomerModule } from './modules/customer/customer.module';
 import { DetailOrderModule } from './modules/detail-order/detail-order.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -32,8 +33,14 @@ import { DetailOrderModule } from './modules/detail-order/detail-order.module';
     }),
     ServeStaticModule.forRoot(
       {
-      rootPath: join(__dirname, '..', 'public', 'build'),  // Thư mục chứa các file tĩnh
-      serveRoot: '',
+      rootPath: join(__dirname, '..', 'public', 'fe-customer', 'build'),  // Thư mục chứa các file tĩnh
+      serveRoot: '/',
+      exclude: ['/api*', '/admin*'], 
+      },
+      {
+      rootPath: join(__dirname, '..', 'public', 'fe-admin', 'build'),  // Thư mục chứa các file tĩnh
+      serveRoot: '/admin',
+      exclude: ['/api*'], 
       },
       {
         rootPath: join(__dirname, '..', 'public', 'uploads', 'images'),  // Thư mục chứa các file tĩnh
@@ -48,6 +55,7 @@ import { DetailOrderModule } from './modules/detail-order/detail-order.module';
     CustomerModule,
     DetailOrderModule,
   ],
+  controllers: [AppController],
 
 })
 export class AppModule {}

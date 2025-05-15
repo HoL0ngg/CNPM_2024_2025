@@ -4,6 +4,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Order } from './order.entity';
 import { DetailOrder } from '../detail-order/detail-order.entity';
 import { Customer } from '../customer/customer.entity';
+import { Product } from '../product/product.entity';
 
 @Injectable()
 export class OrderService {
@@ -17,20 +18,21 @@ export class OrderService {
         @InjectRepository(Customer)
         private readonly customerRepository: Repository<Customer>,
 
+        @InjectRepository(Product)
+        private readonly productRepository: Repository<Product>,
+
         private dataSource: DataSource,
     ) {}
 
     async create(data: any): Promise<boolean> {
-        // Start a transaction
+        //Sài transaction
         await this.dataSource.transaction(async (transactionalEntityManager) => {
-            // 1. Create and save the customer
             const customer = transactionalEntityManager.create(Customer, data.customer);
             const savedCustomer = await transactionalEntityManager.save(Customer, customer);
 
-            // 2. Create and save the order
             const orderInfo = {
                 customerId: savedCustomer.id,
-                totalPrice: data.totalPrice,
+                totalPrice: data.order.totalPrice,
                 status: 'Chờ xử lý', // hoặc giá trị mặc định khác
             };
             
@@ -69,5 +71,74 @@ export class OrderService {
             await transactionalEntityManager.save(DetailOrder, detailOrdersToSave);
         });
         return true;
+    }
+
+    async getAll(): Promise<Order[]> {
+        return this.orderRepository.find({
+            relations: {
+                customer: true,
+                detailOrders: {
+                    product: true,
+                    topping: true,
+                },
+            },
+        });
+    }
+
+    async update(data: any): Promise<Order> {
+        const order = await this.orderRepository.findOne({ where: { id: data.id } });
+        if (!order) {
+            throw new Error('Order not found');
+        }
+        if(order.status === "Chờ xử lý") {
+            order.status = "Đang nấu";
+            const detailOrders = await this.detailOrderRepository.find({ where: { orderId: order.id } });
+            for (const detailOrder of detailOrders) {
+                const product = await this.productRepository.findOne({ where: { id: detailOrder.productId } });
+                if (product) {
+                    product.quantity -= detailOrder.quantityProduct;
+                    await this.productRepository.save(product);
+                }
+                const topping = await this.productRepository.findOne({ where: { id: detailOrder.toppingId } });
+                if (topping) {
+                    topping.quantity -= 1;
+                    await this.productRepository.save(topping);
+                }
+            }
+        }
+        else if(order.status === "Đang nấu") {
+            order.status = "Đã hoàn thành";
+        }
+
+        order.updated_at = new Date();
+        return this.orderRepository.save(order);
+    }
+
+    async cancel(data: any): Promise<Order> {
+        const order = await this.orderRepository.findOne({ where: { id: data.id } });
+        if (!order) {
+            throw new Error('Order not found');
+        }
+        if(order.status === "Chờ xử lý") {
+            order.status = "Đã hủy";
+        }
+        else if(order.status === "Đang nấu") {
+            order.status = "Đã hủy";
+            const detailOrders = await this.detailOrderRepository.find({ where: { orderId: order.id } });
+            for (const detailOrder of detailOrders) {
+                const product = await this.productRepository.findOne({ where: { id: detailOrder.productId } });
+                if (product) {
+                    product.quantity += detailOrder.quantityProduct;
+                    await this.productRepository.save(product);
+                }
+                const topping = await this.productRepository.findOne({ where: { id: detailOrder.toppingId } });
+                if (topping) {
+                    topping.quantity += 1;
+                    await this.productRepository.save(topping);
+                }
+            }
+        }
+        order.updated_at = new Date();
+        return this.orderRepository.save(order);
     }
 }
