@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ToppingService } from './topping.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -35,6 +35,55 @@ export class ToppingController {
         } catch (error) {
             return {
                 message: 'Error creating topping',
+                error: error.message,
+            };
+        }
+    }
+
+    @Get()
+    async getAll() {
+        try {
+            const toppings = await this.toppingService.getAll();
+            const filteredToppings = toppings.filter(topping => topping.id !== 0);
+            return {
+                message: 'Toppings retrieved successfully',
+                data: filteredToppings,
+            };
+        } catch (error) {
+            return {
+                message: 'Error retrieving toppings',
+                error: error.message,
+            };
+        }
+    }
+
+    @Post('delete')
+    async delete(@Body() toppingData: any) {
+        try {
+            const topping = await this.toppingService.delete(toppingData);
+            return {
+                message: 'Topping deleted successfully',
+                data: topping,
+            };
+        } catch (error) {
+            return {
+                message: 'Error deleting topping',
+                error: error.message,
+            };
+        }
+    }
+
+    @Put()
+    async update(@Body() toppingData: any) {
+        try {
+            const topping = await this.toppingService.update(toppingData);
+            return {
+                message: 'Topping updated successfully',
+                data: topping,
+            };
+        } catch (error) {
+            return {
+                message: 'Error updating topping',
                 error: error.message,
             };
         }

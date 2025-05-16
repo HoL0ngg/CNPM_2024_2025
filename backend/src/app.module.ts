@@ -43,8 +43,8 @@ import { AppController } from './app.controller';
       exclude: ['/api*'], 
       },
       {
-        rootPath: join(__dirname, '..', 'public', 'uploads', 'images'),  // Thư mục chứa các file tĩnh
-        serveRoot: '/uploads/images',
+        rootPath: join(__dirname, '..', 'uploads'),  // Thư mục chứa các file tĩnh
+        serveRoot: '/',
       },
     ),
     UserModule,

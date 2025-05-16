@@ -27,11 +27,15 @@ export class OrderService {
     async create(data: any): Promise<boolean> {
         //Sài transaction
         await this.dataSource.transaction(async (transactionalEntityManager) => {
-            const customer = transactionalEntityManager.create(Customer, data.customer);
-            const savedCustomer = await transactionalEntityManager.save(Customer, customer);
-
+            let existingCustomer = await transactionalEntityManager.findOne(Customer, {
+                where: { phone: data.customer.phone },
+            });
+            if(!existingCustomer) {
+                existingCustomer = transactionalEntityManager.create(Customer, data.customer);
+                existingCustomer= await transactionalEntityManager.save(Customer, existingCustomer);
+            }
             const orderInfo = {
-                customerId: savedCustomer.id,
+                customerPhone: existingCustomer.phone,
                 totalPrice: data.order.totalPrice,
                 status: 'Chờ xử lý', // hoặc giá trị mặc định khác
             };

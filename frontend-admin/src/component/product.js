@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import { 
   Typography, Paper, Box, TextField, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -9,150 +9,293 @@ import { Search as SearchIcon, Add as AddIcon, Edit as EditIcon, Delete as Delet
 import axios from 'axios';
 import '../css/product.css';
 
-const Product = () => {
-  const [openDialog, setOpenDialog] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [products, setProducts] = useState([]);
-  const categories = [];
+// 1. Định nghĩa initialState - tất cả state của component
+const initialState = {
+  // Dialog states
+  openDialog: false,
+  openToppingDialog: false,
+  openToppingListDialog: false,
+  
+  // Data states
+  products: [],
+  toppings: [],
+  categories: [],
+  
+  // Selection states
+  selectedProduct: null,
+  selectedTopping: null,
+  selectedCategory: 'Tất cả',
+  selectedToppingsCheckbox: [],
+  
+  // Search states
+  searchTerm: '',
+  toppingSearchTerm: '',
+  
+  // Image states
+  imageFile: null,
+  imagePreview: '',
+  toppingImageFile: null
+};
 
-   // State và các hàm hiện tại
-  const [imageFile, setImageFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState('');
+// 2. Định nghĩa reducer function
+function reducer(state, action) {
+  switch (action.type) {
+    // Dialog actions
+    case 'OPEN_PRODUCT_DIALOG':
+      // console.log(action.payload.productToppings.map(obj => obj.topping.id));
+      return { 
+        ...state, 
+        openDialog: true, 
+        selectedProduct: action.payload || null,
+        imagePreview: action.payload?.image ? `http://localhost:3001/images/${action.payload.image}` : '',
+        imageFile: action.payload?.image || null,
+        selectedToppingsCheckbox: action.payload?.productToppings?.map(obj => obj.topping.id) || []
+      };
+      
+    case 'TOGGLE_TOPPING_SELECTION':
+      return {
+        ...state,
+        selectedToppingsCheckbox: state.selectedToppingsCheckbox.includes(action.payload)
+          ? state.selectedToppingsCheckbox.filter(id => id !== action.payload)
+          : [...state.selectedToppingsCheckbox, action.payload]
+      };
+    case 'CLOSE_PRODUCT_DIALOG':
+      return { 
+        ...state, 
+        openDialog: false, 
+        selectedProduct: null,
+        imageFile: null,
+        imagePreview: ''
+      };
+    case 'OPEN_TOPPING_DIALOG':
+      return { 
+        ...state, 
+        openToppingDialog: true, 
+        selectedTopping: action.payload || null,
+        toppingImageFile: null 
+      };
+    case 'CLOSE_TOPPING_DIALOG':
+      return { 
+        ...state, 
+        openToppingDialog: false, 
+        selectedTopping: null,
+        toppingImageFile: null 
+      };
+    case 'OPEN_TOPPING_LIST_DIALOG':
+      return { 
+        ...state, 
+        openToppingListDialog: true 
+      };
+    case 'CLOSE_TOPPING_LIST_DIALOG':
+      return { 
+        ...state, 
+        openToppingListDialog: false,
+        toppingSearchTerm: ''
+      };
+      
+    // Data actions
+    case 'SET_PRODUCTS':
+      return { 
+        ...state, 
+        products: action.payload,
+        categories: [...new Set(action.payload.map(product => product.categoryId))]
+      };
+    case 'SET_TOPPINGS':
+      return { 
+        ...state, 
+        toppings: action.payload 
+      };
+    case 'DELETE_PRODUCT':
+      return { 
+        ...state, 
+        products: state.products.filter(product => product.id !== action.payload) 
+      };
+    case 'DELETE_TOPPING':
+      return { 
+        ...state, 
+        toppings: state.toppings.filter(topping => topping.id !== action.payload) 
+      };
+      
+    // Selection actions
+    case 'SET_SELECTED_CATEGORY':
+      return { 
+        ...state, 
+        selectedCategory: action.payload 
+      };
+      
+    // Search actions
+    case 'SET_SEARCH_TERM':
+      return { 
+        ...state, 
+        searchTerm: action.payload 
+      };
+    case 'SET_TOPPING_SEARCH_TERM':
+      return { 
+        ...state, 
+        toppingSearchTerm: action.payload 
+      };
+      
+    // Image actions
+    case 'SET_IMAGE_FILE':
+      return { 
+        ...state, 
+        imageFile: action.payload.file,
+        imagePreview: action.payload.preview
+      };
+    case 'SET_TOPPING_IMAGE_FILE':
+      return { 
+        ...state, 
+        toppingImageFile: action.payload 
+      };
+      
+    default:
+      return state;
+  }
+}
+
+const Product = () => {
+  // 3. Sử dụng useReducer thay cho nhiều useState
+  const [state, dispatch] = useReducer(reducer, initialState);
+  
+  // 4. Tách refs ra vì chúng không phải là state
   const fileInputRef = useRef(null);
-  // Thêm state mới cho dialog món ăn phụ
-  const [openToppingDialog, setOpenToppingDialog] = useState(false);
-  const [selectedTopping, setSelectedTopping] = useState(null);
-  const [toppingImageFile, setToppingImageFile] = useState(null);
   const toppingFileInputRef = useRef(null);
   
-  // Xử lý khi chọn file
+  // Lấy dữ liệu products khi component mount
+  useEffect(() => {
+    getProducts();
+    getToppings();
+  }, []);
+
+  // API calls
+  const getProducts = async () => {
+    try {
+      const response = await axios.get('/product');
+      const result = response.data;
+      // Dispatch action để cập nhật state
+      dispatch({ type: 'SET_PRODUCTS', payload: result.data });
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const getToppings = async () => {
+    try {
+      const response = await axios.get('/topping');
+      const result = response.data;
+      dispatch({ type: 'SET_TOPPINGS', payload: result.data });
+    } catch (error) {
+      console.error('Error fetching toppings:', error);
+    }
+  };
+
+  // Event handlers
+  const handleToppingToggle = (toppingId) => {
+    dispatch({ type: 'TOGGLE_TOPPING_SELECTION', payload: toppingId });
+  };
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImageFile(file);
-      
-      // Tạo URL preview cho hình ảnh đã chọn
       const reader = new FileReader();
       reader.onload = () => {
-        setImagePreview(reader.result);
+        dispatch({ 
+          type: 'SET_IMAGE_FILE', 
+          payload: {
+            file: file,
+            preview: reader.result
+          }
+        });
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const [selectedCategory, setSelectedCategory] = useState('Tất cả');
-
-  const handleOpenDialog = (product = null) => {
-    setSelectedProduct(product);
-    setOpenDialog(true);
-  };
-
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setSelectedProduct(null);
-  };
-
-  const handleSaveProduct = (event) => {
-    event.preventDefault();
-    // Logic to save product
-    handleCloseDialog();
-  };
-
-  const handleDeleteProduct = (id) => {
-    // Logic to delete product
-    setProducts(products.filter(product => product.id !== id));
-  };
-
-  let filteredProducts = [];
-  
-  if(products.length !== 0) {
-    filteredProducts = products.filter(product => {
-      return (
-        (selectedCategory === 'Tất cả' || product.category === selectedCategory) &&
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  }
-
-  const getProducts = async () => {
-    const repsonse = await axios.get('/product');
-    const result = repsonse.data;
-    setProducts(result.data);
-  }
-
-  useEffect(() => {
-    getProducts();  
-  }, []);
-
-  products.forEach(product => {
-    if (!categories.includes(product.categoryId)) {
-      categories.push(product.categoryId);
-    }
-  });
-
-  const handleSubmit = async (event) => {
-    const formData = new FormData();
-    formData.append('file', imageFile);
-    //post ảnh lên api để lưu vào folder uploads của backend
-    let response = await axios.post('/product/image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    const imageName = response.data.filename;
-
-    const data = {
-      name: event.target.name.value,
-      category: event.target.category.value,
-      price: event.target.price.value,
-      quantity: event.target.quantity.value,
-      description: event.target.description.value,
-      image: imageName,
-    }
-    console.log(data);
-    let repsonse = await axios.post('/product', data);
-    const result = repsonse.data;
-  }
-
-  // Hàm mở dialog topping
-  const handleOpenDialogTopping = (topping = null) => {
-    setSelectedTopping(topping);
-    setOpenToppingDialog(true);
-  };
-
-  // Hàm đóng dialog topping
-  const handleCloseToppingDialog = () => {
-    setOpenToppingDialog(false);
-    setSelectedTopping(null);
-    setToppingImageFile(null);
-    if (toppingFileInputRef.current) {
-      toppingFileInputRef.current.value = '';
-    }
-  };
-
-  // Xử lý khi chọn file hình ảnh topping
   const handleToppingImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setToppingImageFile(file);
+      dispatch({ type: 'SET_TOPPING_IMAGE_FILE', payload: file });
     }
   };
 
-  // Hàm submit form topping
+  const handleDeleteProduct = (id) => {
+    dispatch({ type: 'DELETE_PRODUCT', payload: id });
+    // API call để xóa sản phẩm
+    // axios.delete(`/product/${id}`);
+  };
+
+  const handleDeleteTopping = async (id) => {
+    try {
+      await axios.post(`/topping/delete`, { id }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      dispatch({ type: 'DELETE_TOPPING', payload: id });
+    } catch (error) {
+      console.error('Error deleting topping:', error);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const buttonText = event.nativeEvent.submitter.innerText;
+    console.log(buttonText);
+    const data = {
+        product: {
+          name: event.target.name.value,
+          categoryId: event.target.category.value,
+          price: event.target.price.value,
+          quantity: event.target.quantity.value,
+          description: event.target.description.value,
+        },
+        productTopping: {
+          toppings: state.selectedToppingsCheckbox
+        }
+      };
+      // console.log(data);
+    if (state.imageFile) {
+      const formData = new FormData();
+      formData.append('file', state.imageFile);
+      try {
+        let response = await axios.post('/product/image', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        const imageName = response.data.filename;
+        data.product.image = imageName;
+      } catch (error) {
+        console.error('Error saving product:', error);
+      }
+    }
+    else{
+      if(buttonText === 'THÊM SẢN PHẨM'){
+        alert('Vui lòng chọn hình ảnh sản phẩm');
+        return;
+      }
+    }
+    
+    if (!state.selectedProduct) {
+      await axios.post('/product', data);
+    }
+    else {
+      data.product.id = state.selectedProduct.id;
+      data.image = state.selectedProduct.image;
+      await axios.put('/product', data);
+    }
+    console.log(data);
+    getProducts(); // Refresh products list
+    dispatch({ type: 'CLOSE_PRODUCT_DIALOG' });
+  };
+
   const handleSubmitTopping = async (event) => {
     event.preventDefault();
     
-    const formData = new FormData();
-    formData.append('file', toppingImageFile);
-    
     try {
       let imageName = null;
-      if (toppingImageFile) {
+      if (state.toppingImageFile) {
+        const formData = new FormData();
+        formData.append('file', state.toppingImageFile);
+        
         let response = await axios.post('/topping/image', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
+          headers: { 'Content-Type': 'multipart/form-data' }
         });
         imageName = response.data.filename;
       }
@@ -160,29 +303,35 @@ const Product = () => {
       const data = {
         name: event.target.name.value,
         price: event.target.price.value,
-        image: imageName
+        image: imageName || (state.selectedTopping ? state.selectedTopping.image : null),
+        quantity: event.target.quantity.value,
       };
       
-      // Gửi request API
-      if (selectedTopping) {
-        // Cập nhật topping
-        await axios.put(`/topping/${selectedTopping.id}`, data);
+      if (state.selectedTopping) {
+        await axios.put(`/topping`, data);
       } else {
-        // Thêm topping mới
         await axios.post('/topping', data);
       }
       
-      // Đóng dialog và reset state
-      handleCloseToppingDialog();
-      
-      // Có thể thêm thông báo thành công ở đây
-      
+      dispatch({ type: 'CLOSE_TOPPING_DIALOG' });
+      getToppings(); // Refresh toppings
     } catch (error) {
       console.error('Error saving topping:', error);
-      // Có thể thêm thông báo lỗi ở đây
     }
-  }
+  };
 
+  // Tính toán filtered products
+  const filteredProducts = state.products.filter(product => {
+    return (
+      (state.selectedCategory === 'Tất cả' || product.categoryId === state.selectedCategory) &&
+      product.name.toLowerCase().includes(state.searchTerm.toLowerCase())
+    );
+  });
+
+  // Tính toán filtered toppings
+  const filteredToppings = state.toppings.filter(topping => 
+    topping.name.toLowerCase().includes(state.toppingSearchTerm.toLowerCase())
+  );
 
   return (
     <>
@@ -197,8 +346,8 @@ const Product = () => {
               placeholder="Tìm kiếm sản phẩm..."
               variant="outlined"
               size="small"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={state.searchTerm}
+              onChange={(e) => dispatch({ type: 'SET_SEARCH_TERM', payload: e.target.value })}
               sx={{ width: '300px' }}
               InputProps={{
                 startAdornment: (
@@ -212,35 +361,37 @@ const Product = () => {
             <FormControl size="small" sx={{ minWidth: 150 }}>
               <InputLabel>Danh mục</InputLabel>
               <Select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
+                value={state.selectedCategory}
+                onChange={(e) => dispatch({ type: 'SET_SELECTED_CATEGORY', payload: e.target.value })}
                 label="Danh mục"
               >
                 <MenuItem value="Tất cả">Tất cả</MenuItem>
-                {categories.map((category) => {
-                  // console.log(category);
-                  return <MenuItem key={category} value={category}>{category}</MenuItem>;
-                })}
+                {state.categories.map((category) => (
+                  <MenuItem key={category} value={category}>{category}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>
-          
+
           <Button 
             variant="contained" 
             startIcon={<AddIcon />}
-            onClick={() => handleOpenDialogTopping()}
+            onClick={() => {
+              dispatch({ type: 'OPEN_TOPPING_LIST_DIALOG' });
+              getToppings();
+            }}
             sx={{ 
               bgcolor: '#ff5a5f', 
               '&:hover': { bgcolor: '#e0484d' }
             }}
           >
-            Thêm món ăn phụ
+            Danh sách món ăn phụ
           </Button>
 
           <Button 
             variant="contained" 
             startIcon={<AddIcon />}
-            onClick={() => handleOpenDialog()}
+            onClick={() => dispatch({ type: 'OPEN_PRODUCT_DIALOG' })}
             sx={{ 
               bgcolor: '#ff5a5f', 
               '&:hover': { bgcolor: '#e0484d' }
@@ -280,10 +431,9 @@ const Product = () => {
                       }}
                     >
                       <img 
-                        src={`http://localhost:3001/uploads/images/${product.image}`}
+                        src={`http://localhost:3001/images/${product.image}`}
                         alt={product.name} 
                         style={{ maxWidth: '100%', maxHeight: '100%' }}
-      
                       />
                     </Box>
                   </TableCell>
@@ -297,7 +447,7 @@ const Product = () => {
                       variant="outlined" 
                       color="primary" 
                       sx={{ mr: 1 }}
-                      onClick={() => handleOpenDialog(product)}
+                      onClick={() => dispatch({ type: 'OPEN_PRODUCT_DIALOG', payload: product })}
                       startIcon={<EditIcon />}
                     >
                       Sửa
@@ -320,14 +470,11 @@ const Product = () => {
       </Paper>
       
       {/* Add/Edit Product Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={state.openDialog} onClose={() => dispatch({ type: 'CLOSE_PRODUCT_DIALOG' })} maxWidth="sm" fullWidth>
         <DialogTitle className="dialog-title">
-          {selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
+          {state.selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
         </DialogTitle>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmit(e);
-        }}>
+        <form onSubmit={handleSubmit}>
           <DialogContent>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -336,7 +483,7 @@ const Product = () => {
                   label="Tên sản phẩm"
                   name="name"
                   required
-                  defaultValue={selectedProduct?.name || ''}
+                  defaultValue={state.selectedProduct?.name || ''}
                   className="input-field"
                 />
               </Grid>
@@ -346,10 +493,10 @@ const Product = () => {
                   <Select
                     name="category"
                     label="Danh mục"
-                    defaultValue={selectedProduct?.categoryId || 'Tất cả'}
+                    defaultValue={state.selectedProduct?.categoryId || 'Mỳ'}
                   >
-                    <MenuItem value="Tất cả">Tất cả</MenuItem>
-                    {categories.map((category) => (
+      
+                    {state.categories.map((category) => (
                       <MenuItem key={category} value={category}>{category}</MenuItem>
                     ))}
                   </Select>
@@ -362,7 +509,7 @@ const Product = () => {
                   label="Giá"
                   required
                   type="text"
-                  defaultValue={selectedProduct?.price || ''}
+                  defaultValue={state.selectedProduct?.price || ''}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">đ</InputAdornment>,
                   }}
@@ -375,7 +522,7 @@ const Product = () => {
                   label="Số lượng"
                   type="number"
                   required
-                  defaultValue={selectedProduct?.quantity || ''}
+                  defaultValue={state.selectedProduct?.quantity || ''}
                 />
               </Grid>
               <Grid item xs={7}>
@@ -395,6 +542,32 @@ const Product = () => {
                     onChange={handleImageChange}
                   />
                 </Button>
+                {/* Thêm phần preview ảnh */}
+                {(state.imagePreview || (state.selectedProduct && state.selectedProduct.image)) && (
+                  <Box 
+                    sx={{ 
+                      mt: 2,
+                      display: 'flex', 
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '100%',
+                      height: '120px',
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    <img 
+                      src={ state.imagePreview || `http://localhost:3001/images/${state.selectedProduct.image}`}
+                      alt="Hình ảnh xem trước" 
+                      style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '100%', 
+                        objectFit: 'contain' 
+                      }}
+                    />
+                  </Box>
+                )}
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -403,34 +576,101 @@ const Product = () => {
                   label="Mô tả"
                   multiline
                   rows={4}
-                  defaultValue={selectedProduct?.description || ''}
+                  defaultValue={state.selectedProduct?.description || ''}
                   className="multiline-input"
                 />
+              </Grid>
+              {/* Thêm phần hiển thị danh sách topping */}
+              <Grid item xs={12}>
+                <Typography variant="subtitle1" gutterBottom>
+                  Món ăn phụ kèm theo
+                </Typography>
+                <Box sx={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                  gap: 1, 
+                  maxHeight: '200px', 
+                  overflowY: 'auto',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '4px',
+                  p: 1
+                }}>
+                  {state.toppings.map(topping => (
+                    <Box 
+                      key={topping.id} 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        p: 1,
+                        borderRadius: '4px',
+                        '&:hover': {
+                          bgcolor: 'rgba(0, 0, 0, 0.04)'
+                        } 
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        id={`topping-${topping.id}`}
+                        
+                        checked={state.selectedToppingsCheckbox.includes(topping.id)}
+                        
+                        onChange={() => handleToppingToggle(topping.id)}
+                        style={{ marginRight: '8px' }}
+                      />
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                        {topping.image && (
+                          <Box sx={{ width: 30, height: 30, mr: 1 }}>
+                            <img 
+                              src={`http://localhost:3001/images/${topping.image}`}
+                              alt={topping.name} 
+                              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                            />
+                          </Box>
+                        )}
+                        <Box>
+                          <Typography variant="body2">{topping.name}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {topping.price.toLocaleString('vi-VN')} đ
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))}
+                  {state.toppings.length === 0 && (
+                    <Typography variant="body2" color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+                      Chưa có món ăn phụ nào. Vui lòng thêm món ăn phụ trước.
+                    </Typography>
+                  )}
+                </Box>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions className="dialog-actions">
-            <Button onClick={handleCloseDialog} className="cancel-button">Hủy</Button>
+            <Button onClick={() => dispatch({ type: 'CLOSE_PRODUCT_DIALOG' })} className="cancel-button">Hủy</Button>
             <Button 
               type="submit"
               variant="contained" 
               className="save-button"
+              name="button"
             >
-              {selectedProduct ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
+              {state.selectedProduct ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
       {/* Add/Edit Topping Dialog */}
-      <Dialog open={openToppingDialog} onClose={handleCloseToppingDialog} maxWidth="sm" fullWidth>
+      <Dialog 
+        open={state.openToppingDialog} 
+        onClose={() => dispatch({ type: 'CLOSE_TOPPING_DIALOG' })} 
+        maxWidth="sm" 
+        fullWidth
+      >
         <DialogTitle className="dialog-title">
-          {selectedTopping ? 'Chỉnh sửa món ăn phụ' : 'Thêm món ăn phụ'}
+          {state.selectedTopping ? 'Chỉnh sửa món ăn phụ' : 'Thêm món ăn phụ'}
         </DialogTitle>
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleSubmitTopping(e);
-        }}>
+        <form onSubmit={handleSubmitTopping}>
           <DialogContent>
             <Grid container spacing={3}>
               <Grid item xs={12}>
@@ -439,7 +679,7 @@ const Product = () => {
                   label="Tên món ăn phụ"
                   name="name"
                   required
-                  defaultValue={selectedTopping?.name || ''}
+                  defaultValue={state.selectedTopping?.name || ''}
                   className="input-field"
                 />
               </Grid>
@@ -450,10 +690,21 @@ const Product = () => {
                   label="Giá"
                   required
                   type="text"
-                  defaultValue={selectedTopping?.price || ''}
+                  defaultValue={state.selectedTopping?.price || ''}
                   InputProps={{
                     endAdornment: <InputAdornment position="end">đ</InputAdornment>,
                   }}
+                />
+              </Grid>
+                <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  name="quantity"
+                  label="Số lượng"
+                  required
+                  type="number"
+                  defaultValue={state.selectedTopping?.quantity || 1}
+                  inputProps={{ min: 1 }}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -476,35 +727,177 @@ const Product = () => {
                 </Button>
               </Grid>
               
-              {selectedTopping && selectedTopping.image && !toppingImageFile && (
-                <Grid item xs={12}>
-                  <Box sx={{ 
+              {state.selectedTopping && state.selectedTopping.image && !state.toppingImageFile && (
+              <Grid item xs={12}>
+                <Box 
+                  sx={{ 
+                    mt: 1,
                     display: 'flex', 
-                    alignItems: 'center',
-                    gap: 1,
-                    fontSize: '0.875rem',
-                    color: 'text.secondary' 
-                  }}>
-                    <span>Hình ảnh hiện tại:</span>
-                    <span>{selectedTopping.image}</span>
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: 1
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Hình ảnh hiện tại:
+                  </Typography>
+                  <Box
+                    sx={{
+                      width: '100%',
+                      height: '120px',
+                      border: '1px solid #e0e0e0', 
+                      borderRadius: '4px',
+                      overflow: 'hidden',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <img 
+                      src={`http://localhost:3001/images/${state.selectedTopping.image}`}
+                      alt={state.selectedTopping.name}
+                      style={{ 
+                        maxWidth: '100%', 
+                        maxHeight: '100%', 
+                        objectFit: 'contain' 
+                      }}
+                    />
                   </Box>
-                </Grid>
-              )}
+                </Box>
+              </Grid>
+            )}
             </Grid>
           </DialogContent>
           <DialogActions className="dialog-actions">
-            <Button onClick={handleCloseToppingDialog} className="cancel-button">Hủy</Button>
+            <Button onClick={() => dispatch({ type: 'CLOSE_TOPPING_DIALOG' })} className="cancel-button">Hủy</Button>
             <Button 
               type="submit"
               variant="contained" 
               className="save-button"
             >
-              {selectedTopping ? 'Lưu thay đổi' : 'Thêm món ăn phụ'}
+              {state.selectedTopping ? 'Lưu thay đổi' : 'Thêm món ăn phụ'}
             </Button>
           </DialogActions>
         </form>
       </Dialog>
 
+      {/* Topping List Dialog */}
+      <Dialog 
+        open={state.openToppingListDialog} 
+        onClose={() => dispatch({ type: 'CLOSE_TOPPING_LIST_DIALOG' })} 
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogTitle className="dialog-title">
+          Danh sách món ăn phụ
+          <Box position="absolute" right={16} top={12}>
+            <Button 
+              variant="contained" 
+              size="small"
+              startIcon={<AddIcon />}
+              onClick={() => {
+                dispatch({ type: 'CLOSE_TOPPING_LIST_DIALOG' });
+                dispatch({ type: 'OPEN_TOPPING_DIALOG' });
+              }}
+              sx={{ 
+                bgcolor: '#ff5a5f', 
+                '&:hover': { bgcolor: '#e0484d' }
+              }}
+            >
+              Thêm mới
+            </Button>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box mb={3} mt={1}>
+            <TextField
+              placeholder="Tìm kiếm món ăn phụ..."
+              variant="outlined"
+              size="small"
+              fullWidth
+              value={state.toppingSearchTerm}
+              onChange={(e) => dispatch({ type: 'SET_TOPPING_SEARCH_TERM', payload: e.target.value })}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell>Hình ảnh</TableCell>
+                  <TableCell>Tên món ăn phụ</TableCell>
+                  <TableCell>Giá</TableCell>
+                  <TableCell align="right">Hành động</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredToppings.map((topping) => (
+                  <TableRow key={topping.id}>
+                    <TableCell>{topping.id}</TableCell>
+                    <TableCell>
+                      <Box 
+                        sx={{ 
+                          width: 50, 
+                          height: 50,
+                          bgcolor: '#f5f5f5',
+                          borderRadius: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center'
+                        }}
+                      >
+                        {topping.image && (
+                          <img 
+                            src={`http://localhost:3001/images/${topping.image}`}
+                            alt={topping.name} 
+                            style={{ maxWidth: '100%', maxHeight: '100%' }}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>{topping.name}</TableCell>
+                    <TableCell>{topping.price.toLocaleString('vi-VN')} đ</TableCell>
+                    <TableCell align="right">
+                      <Button 
+                        size="small" 
+                        variant="outlined" 
+                        color="primary" 
+                        sx={{ mr: 1 }}
+                        onClick={() => {
+                          dispatch({ type: 'CLOSE_TOPPING_LIST_DIALOG' });
+                          dispatch({ type: 'OPEN_TOPPING_DIALOG', payload: topping });
+                        }}
+                        startIcon={<EditIcon />}
+                      >
+                        Sửa
+                      </Button>
+                      <Button 
+                        size="small" 
+                        variant="outlined" 
+                        color="error"
+                        onClick={() => handleDeleteTopping(topping.id)}
+                        startIcon={<DeleteIcon />}
+                      >
+                        Xóa
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions className="dialog-actions">
+          <Button onClick={() => dispatch({ type: 'CLOSE_TOPPING_LIST_DIALOG' })} className="cancel-button">Đóng</Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

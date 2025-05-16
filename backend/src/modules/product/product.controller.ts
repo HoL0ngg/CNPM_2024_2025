@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -48,9 +48,9 @@ export class ProductController {
     }
 
     @Post()
-    async create(@Body() productData: any) {
+    async create(@Body() data: any) {
         try {
-            const product = await this.productService.create(productData);
+            const product = await this.productService.create(data);
             return {
                 message: 'Product created successfully',
                 data: product,
@@ -58,6 +58,22 @@ export class ProductController {
         } catch (error) {
             return {
                 message: 'Error creating product',
+                error: error.message,
+            };
+        }
+    }
+
+    @Put()
+    async update(@Body() data: any) {
+        try {
+            const product = await this.productService.update(data);
+            return {
+                message: 'Product updated successfully',
+                data: product,
+            };
+        } catch (error) {
+            return {
+                message: 'Error updating product',
                 error: error.message,
             };
         }

@@ -20,12 +20,12 @@ export class Order {
   status: string;
 
   @Column()
-  customerId: number;
+  customerPhone: string;
 
   @ManyToOne(() => Customer, (customer) => customer.orders, {
     onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'customerId' })
+  @JoinColumn({ name: 'customerPhone' })
   customer: Customer;
 
   @OneToMany(() => DetailOrder, (detailOrder) => detailOrder.order)

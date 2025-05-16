@@ -78,14 +78,7 @@ const FoodMenu = () => {
   //   },
   // ];
   
-  // const categories = [
-  //   { id: 0, name: "all", label: "Tất cả", imgUrl: welcome },
-  //   { id: 1, name: "burger", label: "Burger", imgUrl: burger },
-  //   { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
-  //   { id: 3, name: "spagetti", label: "Mỳ", imgUrl: miy },
-  //   { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
-  //   { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
-  // ];
+
 
   const addToCart = (item) => {
     const existingItem = cartItems.find((cartItem) => {
@@ -138,7 +131,7 @@ const FoodMenu = () => {
 
   const filteredItems = foodItems
     .filter((item) =>
-      selectedCategory === "all" || item.category === selectedCategory
+      selectedCategory === "Tất cả" || item.categoryId === selectedCategory
     )
     .filter((item) =>
       searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -154,11 +147,66 @@ const FoodMenu = () => {
   useEffect(() => {
     getFoodItems();
   }, []);
-
-  const categories = [];
+  // const categories = [
+  //   { id: 0, name: "all", label: "Tất cả", imgUrl: welcome },
+  //   { id: 1, name: "burger", label: "Burger", imgUrl: burger },
+  //   { id: 2, name: "drink", label: "Nước uống", imgUrl: nuocngot },
+  //   { id: 3, name: "spagetti", label: "Mỳ", imgUrl: miy },
+  //   { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
+  //   { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
+  // ];
+  const categories = [{
+    id: "Tất cả",
+    label: "Tất cả",
+    image: "welcome.png",
+  }];
   foodItems.forEach((item) => {
-    if (!categories.includes(item.categoryId)) {
-      categories.push(item.categoryId);
+    if (!categories.find((category) => category.id === item.categoryId)) {
+      switch (item.categoryId) {
+        case "Mỳ":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "mi_y.png",
+          });
+          break;
+        case "Đồ uống":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "nuoc_ngot.png",
+          });
+        break;
+        case "Bánh tráng":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "banhtrangtron.png",
+          });
+          break;
+        case "Rau":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "omelette.png",
+          });
+          break;
+        case "Cơm":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "nuoc_ngot.png",
+          });
+          break;
+        case "Bánh mỳ":
+          categories.push({
+            id: item.categoryId,
+            label: item.categoryId,
+            image: "hamburger.png",
+          });
+          break;
+      }
+      
     }
   });
 
@@ -202,15 +250,16 @@ const FoodMenu = () => {
               modules={[Navigation]}
               className="food-swiper"
             >
+              {console.log(categories)}
               {categories.map((category) => (
                 <SwiperSlide key={category.id} style={{ width: "auto" }}>
                   <div
-                    className={`food-placeholder ${selectedCategory === category.name ? "active" : ""
+                    className={`food-placeholder ${selectedCategory === category.id ? "active" : ""
                       }`}
-                    onClick={() => setselectedCategory(category.name)}
+                    onClick={() => setselectedCategory(category.id)}
                   >
-                    <img src={category.imgUrl} alt={category.label} />
-                    <p>{category.label}</p>
+                    <img src={`http://localhost:3001/images/${category.image}`} alt={category.id} />
+                    <p>{category.id}</p>
                   </div>
                 </SwiperSlide>
               ))}
@@ -234,7 +283,7 @@ const FoodMenu = () => {
               {filteredItems.map((item, index) => (
                 <div key={item.id} className="food-item">
                   <div className="food-image-placeholder">
-                    <img src={item.imgUrl} />
+                    <img src={`http://localhost:3001/images/${item.image}`} />
                   </div>
                   <p className="food-title">
                     {index + 1}. {item.name}

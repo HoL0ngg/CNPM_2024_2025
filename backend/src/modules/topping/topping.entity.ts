@@ -17,6 +17,9 @@ export class Topping {
     @Column()
     image: string;
 
+    @Column()
+    quantity: number;
+
     @OneToMany(() => ProductTopping, (pt) => pt.topping)
     productToppings: ProductTopping[];
 
