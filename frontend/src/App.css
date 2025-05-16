@@ -8,7 +8,7 @@
   /* box-sizing: border-box; */
   width: 100vw;
   height: 100vh;
-  overflow-y: hidden;
+  overflow-y: auto;
 }
 
 .food-menu {
@@ -21,6 +21,7 @@
   display: flex;
   justify-content: flex-start;
   width: 75%;
+  height: 12%;
 }
 
 .back-btn {
@@ -41,7 +42,7 @@
   display: flex;
   gap: 20px;
   max-width: 100%;
-  height: 100%;
+  height: 88%;
   /* Đảm bảo không vượt quá container cha */
   box-sizing: border-box;
   /* overflow-x: hidden; */
@@ -49,7 +50,7 @@
 }
 
 .menu-section {
-  flex: 5;
+  width: 70%;
   /* max-width: 70%; */
   /* Giới hạn chiều rộng tối đa của menu-section */
   box-sizing: border-box;
@@ -62,14 +63,19 @@
 /* Container cho Swiper và các nút điều hướng */
 .swiper-container {
   position: relative;
-  width: 88%;
-  max-width: 100%;
+  width: 100%;
+  height: 21%;
+  /* max-width: 100%; */
   margin: 0px auto;
 }
 
 /* Style cho Swiper */
 .food-swiper {
-  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 72px);
   max-width: 100%;
   box-sizing: border-box;
   /* margin: 0 7px; */
@@ -135,11 +141,11 @@
 }
 
 .swiper-button-prev {
-  left: -6%;
+  left: 0;
 }
 
 .swiper-button-next {
-  right: -6%;
+  right: 0;
 }
 
 .swiper-button-prev::after,
@@ -156,25 +162,19 @@
 }
 
 @media (max-width: 768px) {
-  .swiper-button-prev {
-    left: 0;
-  }
-
-  .swiper-button-next {
-    right: 0;
-  }
-
   .food-placeholder {
     font-size: 12px;
   }
 }
 
 .food-list {
-  height: 100%;
+  height: 79%;
   overflow-y: hidden;
 }
 
 .food-list h3 {
+  height: 6%;
+  margin-top: 10px;
   margin-bottom: 10px;
   border-bottom: 2px solid black;
 }
@@ -185,7 +185,7 @@
   gap: 24px;
   width: 95%;
   margin: 20px auto 0;
-  height: auto;
+  max-height: calc(94% - 40px);
   overflow-y: auto;
   padding: 4px;
 }
@@ -249,7 +249,7 @@
 }
 
 .cart {
-  flex: 2;
+  width: 30%;
   background-color: #fff;
   padding: 10px;
   border-radius: 8px;
@@ -380,7 +380,7 @@
 }
 
 .cart-items-container {
-  height: 70%;
+  height: 67%;
   overflow-y: auto;
 }
 
@@ -613,7 +613,7 @@
   border: none;
   outline: none;
   font-size: 16px;
-  background-color: #f9f9f9;
+  /* background-color: #f9f9f9; */
   color: #333;
 }
 
@@ -1123,4 +1123,58 @@
 
 .payment-methods {
   margin-top: 10px;
+}
+@media screen and (max-width: 1065px){
+  .cart-items-container{
+    height: 63%;
+  }
+}
+@media screen and (max-width: 915px){
+  .food-item{
+    flex-basis: calc(100% / 2 - 16px);
+  }
+}
+@media screen and (max-width: 768px){
+  .content{
+    flex-direction: column-reverse;
+  }
+  .header{
+    width: 100%;
+  }
+  .search-container{
+    width: 80%;
+  }
+  .menu-section{
+    height: 77%;
+    width: 100%;
+  }
+  .cart{
+    width: 100%;
+    height: 23%;
+  }
+  .cart-items-container{
+    height: auto;
+  }
+  .swiper-container{
+    height: 17%;
+  }
+  .food-list{
+    height: 83%;
+  }
+  .food-list h3{
+    height: auto;
+  }
+  .content{
+    height: 150%;
+    justify-content: flex-end;
+  }
+  .product-detail-content{
+    width: 95%;
+  }
+}
+
+@media screen and (max-width: 650px){
+  .food-item{
+    flex-basis: calc(100% / 2 - 16px);
+  }
 }
