@@ -26,6 +26,7 @@ const FoodMenu = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedCategory, setselectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [slidesPerView, setSlidesPerView] = useState(getSlidesPerView());
 
   const handleOrderConfirmed = () => {
     setCartItems([]);
@@ -142,7 +143,19 @@ const FoodMenu = () => {
       searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+  function getSlidesPerView(){
+    const width = window.innerWidth;
+    if(width >= 1065) return 5;
+    if(width >= 800) return 4;
+    if(width >= 650) return 3;
+    return 2;
+  }
 
+  useEffect(() => {
+    const handleResize = () => setSlidesPerView(getSlidesPerView());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <div className="food-menu">
@@ -175,7 +188,7 @@ const FoodMenu = () => {
           <div className="swiper-container">
             <Swiper
               spaceBetween={20}
-              slidesPerView={5}
+              slidesPerView={slidesPerView}
               loop={true}
               navigation={{
                 nextEl: ".swiper-button-next",
