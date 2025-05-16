@@ -25,7 +25,7 @@ import { AuthModule } from './modules/auth/auth.module';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3306,
+      port: 3308,
       username: 'root',
       password: '',
       database: 'orderfood',
@@ -36,12 +36,10 @@ import { AuthModule } from './modules/auth/auth.module';
       {
       rootPath: join(__dirname, '..', 'public', 'fe-customer', 'build'),  // Thư mục chứa các file tĩnh
       serveRoot: '/',
-      exclude: ['/api*', '/admin*'], 
       },
       {
       rootPath: join(__dirname, '..', 'public', 'fe-admin', 'build'),  // Thư mục chứa các file tĩnh
       serveRoot: '/admin',
-      exclude: ['/api*'], 
       },
       {
         rootPath: join(__dirname, '..', 'uploads'),  // Thư mục chứa các file tĩnh
