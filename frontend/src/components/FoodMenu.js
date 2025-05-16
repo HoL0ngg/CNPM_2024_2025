@@ -31,7 +31,7 @@ const FoodMenu = () => {
 
   const handleOrderConfirmed = () => {
     setCartItems([]);
-  }
+  };
 
   // const foodItems = [
   //   {
@@ -77,8 +77,6 @@ const FoodMenu = () => {
   //     imgUrl: mixao,
   //   },
   // ];
-  
-
 
   const addToCart = (item) => {
     const existingItem = cartItems.find((cartItem) => {
@@ -130,11 +128,14 @@ const FoodMenu = () => {
   };
 
   const filteredItems = foodItems
-    .filter((item) =>
-      selectedCategory === "Tất cả" || item.categoryId === selectedCategory
+    .filter(
+      (item) =>
+        selectedCategory === "Tất cả" || item.categoryId === selectedCategory
     )
-    .filter((item) =>
-      searchTerm.trim() === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      (item) =>
+        searchTerm.trim() === "" ||
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
   const getFoodItems = async () => {
@@ -142,7 +143,7 @@ const FoodMenu = () => {
     const result = response.data;
     console.log(result);
     setFoodItems(result.data);
-  }
+  };
 
   useEffect(() => {
     getFoodItems();
@@ -155,11 +156,13 @@ const FoodMenu = () => {
   //   { id: 4, name: "banhtrangtron", label: "Bánh tráng", imgUrl: banhtrangtron },
   //   { id: 5, name: "chicken", label: "Gà rán", imgUrl: garan },
   // ];
-  const categories = [{
-    id: "Tất cả",
-    label: "Tất cả",
-    image: "welcome.png",
-  }];
+  const categories = [
+    {
+      id: "Tất cả",
+      label: "Tất cả",
+      image: "welcome.png",
+    },
+  ];
   foodItems.forEach((item) => {
     if (!categories.find((category) => category.id === item.categoryId)) {
       switch (item.categoryId) {
@@ -176,7 +179,7 @@ const FoodMenu = () => {
             label: item.categoryId,
             image: "nuoc_ngot.png",
           });
-        break;
+          break;
         case "Bánh tráng":
           categories.push({
             id: item.categoryId,
@@ -188,17 +191,17 @@ const FoodMenu = () => {
           categories.push({
             id: item.categoryId,
             label: item.categoryId,
-            image: "omelette.png",
+            image: "rau.jpg",
           });
           break;
         case "Cơm":
           categories.push({
             id: item.categoryId,
             label: item.categoryId,
-            image: "nuoc_ngot.png",
+            image: "com.jpg",
           });
           break;
-        case "Bánh mỳ":
+        case "Bánh mì":
           categories.push({
             id: item.categoryId,
             label: item.categoryId,
@@ -206,7 +209,6 @@ const FoodMenu = () => {
           });
           break;
       }
-      
     }
   });
 
@@ -233,7 +235,6 @@ const FoodMenu = () => {
             </button>
           </div>
         </div>
-
       </div>
 
       <div className="content">
@@ -254,11 +255,15 @@ const FoodMenu = () => {
               {categories.map((category) => (
                 <SwiperSlide key={category.id} style={{ width: "auto" }}>
                   <div
-                    className={`food-placeholder ${selectedCategory === category.id ? "active" : ""
-                      }`}
+                    className={`food-placeholder ${
+                      selectedCategory === category.id ? "active" : ""
+                    }`}
                     onClick={() => setselectedCategory(category.id)}
                   >
-                    <img src={`http://localhost:3001/images/${category.image}`} alt={category.id} />
+                    <img
+                      src={`http://localhost:3001/images/${category.image}`}
+                      alt={category.id}
+                    />
                     <p>{category.id}</p>
                   </div>
                 </SwiperSlide>
@@ -271,7 +276,6 @@ const FoodMenu = () => {
               <i className="fas fa-arrow-right"></i>
             </div>
           </div>
-
 
           <div className="food-list">
             <h3>
@@ -303,8 +307,11 @@ const FoodMenu = () => {
           </div>
         </div>
 
-        <Cart cartItems={cartItems} updateQuantity={updateQuantity} handleOrderConfirmed={handleOrderConfirmed} />
-
+        <Cart
+          cartItems={cartItems}
+          updateQuantity={updateQuantity}
+          handleOrderConfirmed={handleOrderConfirmed}
+        />
       </div>
 
       {selectedProduct && (
@@ -314,10 +321,6 @@ const FoodMenu = () => {
           addToCart={addToCart}
         />
       )}
-
-
-
-
     </div>
   );
 };
