@@ -25,7 +25,7 @@ const FoodMenu = () => {
   // ]);
   const [cartItems, setCartItems] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedCategory, setselectedCategory] = useState("all");
+  const [selectedCategory, setselectedCategory] = useState("Tất cả");
   const [searchTerm, setSearchTerm] = useState("");
   const [foodItems, setFoodItems] = useState([]);
 

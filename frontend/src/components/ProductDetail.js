@@ -73,7 +73,7 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
           x
         </div>
         <div className="left-section-product-detail">
-          <img src={product.imgUrl} alt={product.name} className="main-image" />
+          <img src={`http://localhost:3001/images/${product.image}`} alt={product.name} className="main-image" />
         </div>
 
         <div className="right-section-product-detail">
@@ -96,7 +96,7 @@ const ProductDetail = ({ product, addToCart, onClose }) => {
                   onChange={() => handleToppingChange(topping.id)}
                 />
                 <span className="topping-img">
-                  <img src={topping.image} />
+                  <img src={`http://localhost:3001/images/${topping.image}`} />
                 </span>
                 <span className="topping-name">{topping.name}</span>
                 <span className="topping-price">
