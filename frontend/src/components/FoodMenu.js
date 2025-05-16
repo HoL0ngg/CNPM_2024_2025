@@ -28,6 +28,7 @@ const FoodMenu = () => {
   const [selectedCategory, setselectedCategory] = useState("Tất cả");
   const [searchTerm, setSearchTerm] = useState("");
   const [foodItems, setFoodItems] = useState([]);
+  const [slidesPerView, setSlidesPerView] = useState(getSlidesPerView());
 
   const handleOrderConfirmed = () => {
     setCartItems([]);
@@ -212,6 +213,21 @@ const FoodMenu = () => {
     }
   });
 
+  function getSlidesPerView(){
+    const width = window.innerWidth;
+    if(width >= 1065) return 5;
+    if(width >= 800) return 4;
+    if(width >= 650) return 3;
+    return 2;
+  }
+
+  useEffect(() => {
+    const handleResize = () => setSlidesPerView(getSlidesPerView());
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+
   return (
     <div className="food-menu">
       <div className="header">
@@ -242,7 +258,7 @@ const FoodMenu = () => {
           <div className="swiper-container">
             <Swiper
               spaceBetween={20}
-              slidesPerView={5}
+              slidesPerView={slidesPerView}
               loop={true}
               navigation={{
                 nextEl: ".swiper-button-next",
