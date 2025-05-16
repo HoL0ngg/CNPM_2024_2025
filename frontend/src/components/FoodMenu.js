@@ -109,12 +109,29 @@ const FoodMenu = () => {
     }
   };
 
-  const updateQuantity = (id, delta) => {
-    setCartItems(
-      cartItems
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity + delta } : item
-        )
+  // const updateQuantity = (id, delta) => {
+  //   setCartItems(
+  //     cartItems
+  //       .map((item) =>
+  //         item.id === id ? { ...item, quantity: item.quantity + delta } : item
+  //       )
+  //       .filter((item) => item.quantity > 0)
+  //   );
+  // };
+  const updateQuantity = (id, delta, selectedToppings = []) => {
+    setCartItems((prevItems) =>
+      prevItems
+        .map((item) => {
+          const sameToppings =
+            JSON.stringify(item.toppings?.map((t) => t.id).sort()) ===
+            JSON.stringify(selectedToppings.map((t) => t.id).sort());
+
+          if (item.id === id && sameToppings) {
+            return { ...item, quantity: item.quantity + delta };
+          }
+
+          return item;
+        })
         .filter((item) => item.quantity > 0)
     );
   };
@@ -251,7 +268,7 @@ const FoodMenu = () => {
               modules={[Navigation]}
               className="food-swiper"
             >
-              {console.log(categories)}
+              {/* {console.log(categories)} */}
               {categories.map((category) => (
                 <SwiperSlide key={category.id} style={{ width: "auto" }}>
                   <div

@@ -58,7 +58,7 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
             <div className="item-img">
               <img
                 src={
-                  item.imgUrl ||
+                  `http://localhost:3001/images/${item.image}` ||
                   `https://via.placeholder.com/150?text=${item.name}`
                 }
                 alt={item.name}
@@ -86,9 +86,17 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
 
               <div className="quantity-controls">
                 <div className="quantity">
-                  <button onClick={() => updateQuantity(item.id, -1)}>-</button>
+                  <button
+                    onClick={() => updateQuantity(item.id, -1, item.toppings)}
+                  >
+                    -
+                  </button>
                   <span>{item.quantity}</span>
-                  <button onClick={() => updateQuantity(item.id, 1)}>+</button>
+                  <button
+                    onClick={() => updateQuantity(item.id, 1, item.toppings)}
+                  >
+                    +
+                  </button>
                 </div>
                 <div>
                   <p>{item.price.toLocaleString()}đ</p>
