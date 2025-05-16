@@ -18,6 +18,7 @@ import { ProductToppingModule } from './modules/product_topping/product_topping.
 import { CustomerModule } from './modules/customer/customer.module';
 import { DetailOrderModule } from './modules/detail-order/detail-order.module';
 import { AppController } from './app.controller';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { AppController } from './app.controller';
     ProductToppingModule,
     CustomerModule,
     DetailOrderModule,
+    AuthModule,
   ],
   controllers: [AppController],
 

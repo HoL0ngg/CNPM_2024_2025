@@ -5,6 +5,7 @@ import { Order } from './order.entity';
 import { DetailOrder } from '../detail-order/detail-order.entity';
 import { Customer } from '../customer/customer.entity';
 import { Product } from '../product/product.entity';
+import { Topping } from '../topping/topping.entity';
 
 @Injectable()
 export class OrderService {
@@ -20,6 +21,9 @@ export class OrderService {
 
         @InjectRepository(Product)
         private readonly productRepository: Repository<Product>,
+
+        @InjectRepository(Topping)
+        private readonly top: Repository<Topping>,
 
         private dataSource: DataSource,
     ) {}
@@ -103,10 +107,10 @@ export class OrderService {
                     product.quantity -= detailOrder.quantityProduct;
                     await this.productRepository.save(product);
                 }
-                const topping = await this.productRepository.findOne({ where: { id: detailOrder.toppingId } });
+                const topping = await this.top.findOne({ where: { id: detailOrder.toppingId } });
                 if (topping) {
                     topping.quantity -= 1;
-                    await this.productRepository.save(topping);
+                    await this.top.save(topping);
                 }
             }
         }
@@ -135,10 +139,10 @@ export class OrderService {
                     product.quantity += detailOrder.quantityProduct;
                     await this.productRepository.save(product);
                 }
-                const topping = await this.productRepository.findOne({ where: { id: detailOrder.toppingId } });
+                const topping = await this.top.findOne({ where: { id: detailOrder.toppingId } });
                 if (topping) {
                     topping.quantity += 1;
-                    await this.productRepository.save(topping);
+                    await this.top.save(topping);
                 }
             }
         }

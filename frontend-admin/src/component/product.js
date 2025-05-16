@@ -48,7 +48,7 @@ function reducer(state, action) {
         openDialog: true, 
         selectedProduct: action.payload || null,
         imagePreview: action.payload?.image ? `http://localhost:3001/images/${action.payload.image}` : '',
-        imageFile: action.payload?.image || null,
+        // imageFile: action.payload?.image || null,
         selectedToppingsCheckbox: action.payload?.productToppings?.map(obj => obj.topping.id) || []
       };
       
@@ -727,45 +727,58 @@ const Product = () => {
                 </Button>
               </Grid>
               
-              {state.selectedTopping && state.selectedTopping.image && !state.toppingImageFile && (
-              <Grid item xs={12}>
-                <Box 
-                  sx={{ 
-                    mt: 1,
-                    display: 'flex', 
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    gap: 1
-                  }}
-                >
-                  <Typography variant="body2" color="text.secondary">
-                    Hình ảnh hiện tại:
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: '120px',
-                      border: '1px solid #e0e0e0', 
-                      borderRadius: '4px',
-                      overflow: 'hidden',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
+              {/* Hiển thị ảnh hiện tại hoặc ảnh vừa chọn */}
+              {((state.selectedTopping && state.selectedTopping.image) || state.toppingImageFile) && (
+                <Grid item xs={12}>
+                  <Box 
+                    sx={{ 
+                      mt: 1,
+                      display: 'flex', 
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: 1
                     }}
                   >
-                    <img 
-                      src={`http://localhost:3001/images/${state.selectedTopping.image}`}
-                      alt={state.selectedTopping.name}
-                      style={{ 
-                        maxWidth: '100%', 
-                        maxHeight: '100%', 
-                        objectFit: 'contain' 
+                    <Typography variant="body2" color="text.secondary">
+                      {state.toppingImageFile ? 'Hình ảnh đã chọn:' : 'Hình ảnh hiện tại:'}
+                    </Typography>
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '120px',
+                        border: '1px solid #e0e0e0', 
+                        borderRadius: '4px',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
                       }}
-                    />
+                    >
+                      {state.toppingImageFile ? (
+                        <img 
+                          src={URL.createObjectURL(state.toppingImageFile)}
+                          alt="Hình ảnh xem trước"
+                          style={{ 
+                            maxWidth: '100%', 
+                            maxHeight: '100%', 
+                            objectFit: 'contain' 
+                          }}
+                        />
+                      ) : (
+                        <img 
+                          src={`http://localhost:3001/images/${state.selectedTopping.image}`}
+                          alt={state.selectedTopping.name}
+                          style={{ 
+                            maxWidth: '100%', 
+                            maxHeight: '100%', 
+                            objectFit: 'contain' 
+                          }}
+                        />
+                      )}
+                    </Box>
                   </Box>
-                </Box>
-              </Grid>
-            )}
+                </Grid>
+              )}
             </Grid>
           </DialogContent>
           <DialogActions className="dialog-actions">

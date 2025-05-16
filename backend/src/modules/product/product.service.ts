@@ -66,7 +66,7 @@ export class ProductService {
             for (const item of data.productTopping.toppings) {
                 productToppingsToSave.push(
                     transactionalEntityManager.create(ProductTopping, {
-                        productId: data.id,
+                        productId: data.product.id,
                         toppingId: item,
                     })
                 );

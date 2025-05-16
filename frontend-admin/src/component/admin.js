@@ -1,4 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import Account from './account';
+import PersonIcon from '@mui/icons-material/Person';
+
+
+
 import { 
   Box, Typography, AppBar, Toolbar, 
   Drawer, List, ListItem, ListItemIcon, ListItemText,
@@ -31,6 +38,29 @@ const Admin = () => {
   const [currentTab, setCurrentTab] = useState('statistics');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [user, setUser] = useState(null);
+  
+  const navigate = useNavigate();
+  
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem('adminUser');
+    if (userInfo) {
+      setUser(JSON.parse(userInfo));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    // Xóa thông tin người dùng và token khỏi localStorage
+    localStorage.removeItem('adminUser');
+    localStorage.removeItem('token');
+    
+    // Xóa header Authorization
+    delete axios.defaults.headers.common['Authorization'];
+    
+    // Chuyển hướng về trang đăng nhập
+    navigate('/admin/login');
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -51,6 +81,9 @@ const Admin = () => {
         return <Statistics />;
       case 'products':
         return <Products />;
+      case 'accounts': 
+      return <Account />;
+
       default:
         return <Statistics />;
     }
@@ -74,6 +107,18 @@ const Admin = () => {
       </Box>
       
       <List sx={{ flexGrow: 1 }}>
+          <ListItem
+          button
+          onClick={() => setCurrentTab('statistics')}
+          className={`drawer-list-item ${currentTab === 'statistics' ? 'active' : ''}`}
+          >
+            <ListItemIcon className="drawer-list-icon">
+              <StatisticIcon />
+            </ListItemIcon>
+            {!sidebarCollapsed && (
+              <ListItemText primary="Thống kê" className="drawer-list-text" />
+            )}
+        </ListItem>
         <ListItem
           button
           onClick={() => setCurrentTab('orders')}
@@ -112,25 +157,27 @@ const Admin = () => {
             <ListItemText primary="Sản phẩm" className="drawer-list-text" />
           )}
         </ListItem>
-        
-        <ListItem
+         <ListItem
           button
-          onClick={() => setCurrentTab('statistics')}
-          className={`drawer-list-item ${currentTab === 'statistics' ? 'active' : ''}`}
+          onClick={() => setCurrentTab('accounts')}
+          className={`drawer-list-item ${currentTab === 'accounts' ? 'active' : ''}`}
         >
           <ListItemIcon className="drawer-list-icon">
-            <StatisticIcon />
+            <PersonIcon />
           </ListItemIcon>
           {!sidebarCollapsed && (
-            <ListItemText primary="Thống kê" className="drawer-list-text" />
+            <ListItemText primary="Tài khoản" className="drawer-list-text" />
           )}
         </ListItem>
+        
+      
       </List>
       
       <Divider className="drawer-divider" />
       
       <List>
-        <ListItem button className="drawer-list-item">
+        <ListItem button className="drawer-list-item"
+        onClick={handleLogout}>
           <ListItemIcon className="drawer-list-icon">
             <LogoutIcon />
           </ListItemIcon>

@@ -1,6 +1,6 @@
-// src/users/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Unique } from 'typeorm';
 
+@Unique(['username'])
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
@@ -13,5 +13,14 @@ export class User {
   password: string;
 
   @Column()
-  role: string; // admin | sales | kitchen
+  role: string;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @Column()
+  status: string;
+
+  @Column()
+  name: string;
 }
