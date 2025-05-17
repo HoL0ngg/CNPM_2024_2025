@@ -3,7 +3,12 @@ import CheckoutModal from "./CheckoutModal";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
-const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
+const Cart = ({
+  cartItems,
+  updateQuantity,
+  handleOrderConfirmed,
+  removeProduct,
+}) => {
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
 
   const closeCheckoutModal = () => {
@@ -65,6 +70,12 @@ const Cart = ({ cartItems, updateQuantity, handleOrderConfirmed }) => {
               />
             </div>
             <div className="item-info">
+              <div
+                className="remove-product"
+                onClick={() => removeProduct(item)}
+              >
+                -
+              </div>
               <p>
                 {/* {item.id}. {item.name} */}
                 {++index}. {item.name}

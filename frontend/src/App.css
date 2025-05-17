@@ -848,8 +848,20 @@
   display: flex;
   flex-direction: column;
   flex: 3;
+  position: relative;
 }
-
+.remove-product {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  color: #ff4d4d;
+  font-weight: bolder;
+  font-size: 2rem;
+  cursor: pointer;
+  height: 10px;
+  display: flex;
+  align-items: center;
+}
 .item-quantity {
   font-weight: bold;
   margin-right: 8px;

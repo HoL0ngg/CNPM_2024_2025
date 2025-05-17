@@ -137,6 +137,18 @@ const FoodMenu = () => {
     );
   };
 
+  const removeItem = (itemToRemove) => {
+    setCartItems((prevItems) =>
+      prevItems.filter(
+        (item) =>
+          !(
+            item.id === itemToRemove.id &&
+            JSON.stringify(item.toppings) ===
+              JSON.stringify(itemToRemove.toppings)
+          )
+      )
+    );
+  };
   const openProductDetail = (item) => {
     setSelectedProduct(item);
   };
@@ -230,11 +242,11 @@ const FoodMenu = () => {
     }
   });
 
-  function getSlidesPerView(){
+  function getSlidesPerView() {
     const width = window.innerWidth;
-    if(width >= 1065) return 5;
-    if(width >= 800) return 4;
-    if(width >= 650) return 3;
+    if (width >= 1065) return 5;
+    if (width >= 800) return 4;
+    if (width >= 650) return 3;
     return 2;
   }
 
@@ -243,7 +255,6 @@ const FoodMenu = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
 
   return (
     <div className="food-menu">
@@ -344,6 +355,7 @@ const FoodMenu = () => {
           cartItems={cartItems}
           updateQuantity={updateQuantity}
           handleOrderConfirmed={handleOrderConfirmed}
+          removeProduct={removeItem}
         />
       </div>
 
