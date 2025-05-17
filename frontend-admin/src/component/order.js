@@ -318,6 +318,9 @@ const Order = () => {
                     <Typography variant="body1" className="info-row">
                       <span className="info-label">Tổng tiền:</span> {selectedOrder.totalPrice}đ
                     </Typography>
+                     <Typography variant="body1" className="info-row">
+                      <span className="info-label">Phương thức thanh toán:</span> {selectedOrder.method}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>

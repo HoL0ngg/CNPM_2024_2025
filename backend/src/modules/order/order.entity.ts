@@ -22,6 +22,9 @@ export class Order {
   @Column()
   customerPhone: string;
 
+  @Column()
+  method: string;
+
   @ManyToOne(() => Customer, (customer) => customer.orders, {
     onDelete: 'CASCADE',
   })

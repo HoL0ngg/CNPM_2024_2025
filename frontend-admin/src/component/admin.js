@@ -35,7 +35,7 @@ import Statistics from './statictis';
 import Products from './product';
 
 const Admin = () => {
-  const [currentTab, setCurrentTab] = useState('statistics');
+  const [currentTab, setCurrentTab] = useState('orders');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [user, setUser] = useState(null);
@@ -107,18 +107,7 @@ const Admin = () => {
       </Box>
       
       <List sx={{ flexGrow: 1 }}>
-          <ListItem
-          button
-          onClick={() => setCurrentTab('statistics')}
-          className={`drawer-list-item ${currentTab === 'statistics' ? 'active' : ''}`}
-          >
-            <ListItemIcon className="drawer-list-icon">
-              <StatisticIcon />
-            </ListItemIcon>
-            {!sidebarCollapsed && (
-              <ListItemText primary="Thống kê" className="drawer-list-text" />
-            )}
-        </ListItem>
+          
         <ListItem
           button
           onClick={() => setCurrentTab('orders')}

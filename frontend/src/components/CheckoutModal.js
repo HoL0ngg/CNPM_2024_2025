@@ -25,7 +25,16 @@ const CheckoutModal = ({ onClose, cartItems, onCloseCheckoutModal, handleOrderCo
     setShowConfirmModal(false);
   }
   const handlePaymentMethodChange = (e) => {
-    const method = e.target.value;  // Lấy giá trị của radio button được chọn
+    let method = e.target.value;  // Lấy giá trị của radio button được chọn
+    // if(method === "cash"){
+    //   method = "Tiền mặt khi nhận hàng";
+    // }
+    // else if(method === "banking"){
+    //   method = "Chuyển khoản ngân hàng";
+    // }
+    // else if(method === "momo"){
+    //   method = "Ví MoMo";
+    // }
     setPaymentMethod(method);  // Cập nhật giá trị của paymentMethod khi người dùng chọn một option
   };
 

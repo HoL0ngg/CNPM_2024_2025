@@ -10,6 +10,15 @@ const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm,
   console.log("total", total);
   console.log("paymentMethod", paymentMethod);
   console.log("cusomerInfo", customerInfo);
+  if(paymentMethod === 'banking') {
+    paymentMethod = 'Chuyển khoản ngân hàng';
+  }
+  else if(paymentMethod === 'momo') {
+    paymentMethod = 'Ví MoMo';
+  }
+  else if(paymentMethod === 'cash') {
+    paymentMethod = 'Tiền mặt khi nhận hàng';
+  }
 
   const handleCheckoutConfirm = async () => {
     toast.success("Đơn hàng đã được xác nhận", {
@@ -30,7 +39,8 @@ const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm,
         phone: customerInfo.phone,
       },
       order: {
-        totalPrice: total + tax
+        totalPrice: total + tax,
+        method: paymentMethod,
       },
       detailOrder: cartItems
     }

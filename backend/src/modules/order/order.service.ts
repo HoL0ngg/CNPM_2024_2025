@@ -42,6 +42,7 @@ export class OrderService {
                 customerPhone: existingCustomer.phone,
                 totalPrice: data.order.totalPrice,
                 status: 'Chờ xử lý', // hoặc giá trị mặc định khác
+                method: data.order.method,
             };
             
             const order = transactionalEntityManager.create(Order, orderInfo);
