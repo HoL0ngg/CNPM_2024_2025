@@ -8,6 +8,7 @@
 ---
 
 ## 📁 Cấu trúc thư mục
+~~~
 project-root/
 ├── back-end/ # Mã nguồn Node.js (API)
 │ ├── package.json
@@ -18,6 +19,7 @@ project-root/
 ├── frontend-admin/ # Mã nguồn React giao diện quản lý
 │ ├── package.json
 └── README.md
+~~~
 
 ### 1. Mở Terminal và đi vào thư mục backend:
 
