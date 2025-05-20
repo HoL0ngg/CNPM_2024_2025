@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -45,9 +45,10 @@ const Login = () => {
       // Gọi API đăng nhập
     //   console.log('Đang gọi API đăng nhập...');
       const response = await axios.post('/api/auth/login', {
-        email,
+        username: username,
         password,
       });
+      console.log(username, password);
       console.log(response.data);
 
       if (response.data && response.data.access_token) {
@@ -120,20 +121,14 @@ const Login = () => {
 
         <form onSubmit={handleSubmit}>
           <TextField
-            label="Email"
+            label="Tài khoản"
             variant="outlined"
             fullWidth
             margin="normal"
             required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon fontSize="small" />
-                </InputAdornment>
-              ),
-            }}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            
           />
 
           <TextField
@@ -146,11 +141,7 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockIcon fontSize="small" />
-                </InputAdornment>
-              ),
+              
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton

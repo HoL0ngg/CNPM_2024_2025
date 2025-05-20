@@ -2,10 +2,12 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import authService from '../services/auth';
+import { cloneElement } from 'react';
 
 const PrivateRoute = ({ children }) => {
   // Kiểm tra xem người dùng đã đăng nhập chưa
   const isLoggedIn = authService.isLoggedIn();
+
 
   if (!isLoggedIn) {
     // Chuyển hướng đến trang đăng nhập nếu chưa đăng nhập
@@ -13,6 +15,7 @@ const PrivateRoute = ({ children }) => {
   }
 
   // Nếu đã đăng nhập, hiển thị component con
+  
   return children;
 };
 

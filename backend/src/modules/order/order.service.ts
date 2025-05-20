@@ -150,4 +150,23 @@ export class OrderService {
         order.updated_at = new Date();
         return this.orderRepository.save(order);
     }
+
+    async checkFoodQuantity(data: any): Promise<{ status: boolean; error?: string }> {
+        const order = await this.orderRepository.findOne({ where: { id: data.id } });
+        if (!order) {
+            return { status: false, error: 'Order not found' };
+        }
+        const detailOrders = await this.detailOrderRepository.find({ where: { orderId: order.id } });
+        for (const detailOrder of detailOrders) {
+            const product = await this.productRepository.findOne({ where: { id: detailOrder.productId } });
+            if (product && product.quantity < detailOrder.quantityProduct) {
+                return { status: false, error: `Not enough quantity for product ${product.name}` };
+            }
+            const topping = await this.top.findOne({ where: { id: detailOrder.toppingId } });
+            if (topping && topping.quantity < 1 && topping.id !== 0) {
+                return { status: false, error: `Not enough quantity for topping ${topping.name}` };
+            }
+        }
+        return { status: true };
+    }
 }

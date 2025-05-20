@@ -1,4 +1,7 @@
 import React, { useEffect, useReducer, useRef } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 import { 
   Typography, Paper, Box, TextField, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -9,12 +12,17 @@ import { Search as SearchIcon, Add as AddIcon, Edit as EditIcon, Delete as Delet
 import axios from 'axios';
 import '../css/product.css';
 
+
 // 1. Định nghĩa initialState - tất cả state của component
 const initialState = {
   // Dialog states
   openDialog: false,
   openToppingDialog: false,
   openToppingListDialog: false,
+  openConfirmDeleteDialog: false, 
+  productToDelete: null, 
+  openConfirmDeleteToppingDialog: false, // Thêm state mới
+  toppingToDelete: null, // Thêm state mới
   
   // Data states
   products: [],
@@ -40,7 +48,34 @@ const initialState = {
 // 2. Định nghĩa reducer function
 function reducer(state, action) {
   switch (action.type) {
+    
     // Dialog actions
+    // Thêm action mới cho dialog xác nhận xóa topping
+    case 'OPEN_CONFIRM_DELETE_TOPPING_DIALOG':
+      return {
+        ...state,
+        openConfirmDeleteToppingDialog: true,
+        toppingToDelete: action.payload
+      };
+    case 'CLOSE_CONFIRM_DELETE_TOPPING_DIALOG':
+      return {
+        ...state,
+        openConfirmDeleteToppingDialog: false,
+        toppingToDelete: null
+      };
+
+    case 'OPEN_CONFIRM_DELETE_DIALOG':
+    return {
+      ...state,
+      openConfirmDeleteDialog: true,
+      productToDelete: action.payload
+    };
+    case 'CLOSE_CONFIRM_DELETE_DIALOG':
+      return {
+      ...state,
+      openConfirmDeleteDialog: false,
+      productToDelete: null
+    };
     case 'OPEN_PRODUCT_DIALOG':
       // console.log(action.payload.productToppings.map(obj => obj.topping.id));
       return { 
@@ -219,26 +254,103 @@ const Product = () => {
   };
 
   const handleDeleteProduct = (id) => {
-    dispatch({ type: 'DELETE_PRODUCT', payload: id });
-    // API call để xóa sản phẩm
-    // axios.delete(`/product/${id}`);
+    dispatch({ type: 'OPEN_CONFIRM_DELETE_DIALOG', payload: id });
   };
 
-  const handleDeleteTopping = async (id) => {
-    try {
-      await axios.post(`/topping/delete`, { id }, {
+  // Thêm hàm xử lý xóa
+  const confirmDeleteProduct = async () => {
+    if (state.productToDelete) {
+      dispatch({ type: 'DELETE_PRODUCT', payload: state.productToDelete });
+
+      const response = await axios.post(`/product/remove`, { id: state.productToDelete }, {
         headers: { 'Content-Type': 'application/json' }
       });
-      dispatch({ type: 'DELETE_TOPPING', payload: id });
-    } catch (error) {
-      console.error('Error deleting topping:', error);
+      const result = response.data;
+      console.log(result);
+      if(result.status) {
+        toast.success("Xóa sản phẩm thành công", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+      else {
+        toast.error("Xóa sản phẩm thất bại", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+    dispatch({ type: 'CLOSE_CONFIRM_DELETE_DIALOG' });
+    }
+  };
+
+  const handleDeleteTopping = (id) => {
+    dispatch({ type: 'OPEN_CONFIRM_DELETE_TOPPING_DIALOG', payload: id });
+  };
+  // Thêm hàm xác nhận xóa topping
+  const confirmDeleteTopping = async () => {
+    if (state.toppingToDelete) {
+      try {
+        const response = await axios.post(`/topping/delete`, { id: state.toppingToDelete }, {
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        const result = response.data;
+        if(result.status) {
+          toast.success("Xóa món ăn phụ thành công", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          //load lại danh sách topping
+          getToppings();
+          dispatch({ type: 'DELETE_TOPPING', payload: state.toppingToDelete });
+
+        } else {
+          toast.error(result.message || "Xóa món ăn phụ thất bại", {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+        dispatch({ type: 'CLOSE_CONFIRM_DELETE_TOPPING_DIALOG' });
+      } catch (error) {
+        console.error('Error deleting topping:', error);
+        toast.error("Đã xảy ra lỗi khi xóa món ăn phụ", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        dispatch({ type: 'CLOSE_CONFIRM_DELETE_TOPPING_DIALOG' });
+      }
     }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const buttonText = event.nativeEvent.submitter.innerText;
-    console.log(buttonText);
+    // console.log(buttonText);
     const data = {
         product: {
           name: event.target.name.value,
@@ -267,20 +379,46 @@ const Product = () => {
     }
     else{
       if(buttonText === 'THÊM SẢN PHẨM'){
-        alert('Vui lòng chọn hình ảnh sản phẩm');
+        toast.error("Vui lòng chọn hình ảnh sản phẩm", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
         return;
       }
     }
     
     if (!state.selectedProduct) {
       await axios.post('/product', data);
+      toast.success("Thêm sản phẩm thành công", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
     else {
       data.product.id = state.selectedProduct.id;
       data.image = state.selectedProduct.image;
       await axios.put('/product', data);
+      toast.success("Cập nhật sản phẩm thành công", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
-    console.log(data);
+    // console.log(data);
     getProducts(); // Refresh products list
     dispatch({ type: 'CLOSE_PRODUCT_DIALOG' });
   };
@@ -298,6 +436,7 @@ const Product = () => {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         imageName = response.data.filename;
+        
       }
       
       const data = {
@@ -309,9 +448,28 @@ const Product = () => {
       
       if (state.selectedTopping) {
         await axios.put(`/topping`, data);
+        toast.success("Cập nhật món ăn phụ thành công", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       } else {
         await axios.post('/topping', data);
+        toast.success("Thêm món ăn phụ thành công", {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
       }
+
       
       dispatch({ type: 'CLOSE_TOPPING_DIALOG' });
       getToppings(); // Refresh toppings
@@ -911,7 +1069,37 @@ const Product = () => {
           <Button onClick={() => dispatch({ type: 'CLOSE_TOPPING_LIST_DIALOG' })} className="cancel-button">Đóng</Button>
         </DialogActions>
       </Dialog>
+      <Dialog 
+        open={state.openConfirmDeleteDialog} 
+        onClose={() => dispatch({ type: 'CLOSE_CONFIRM_DELETE_DIALOG' })}
+      >
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>
+          <Typography>Bạn có chắc chắn muốn xóa món ăn này?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => dispatch({ type: 'CLOSE_CONFIRM_DELETE_DIALOG' })}>Hủy</Button>
+          <Button onClick={confirmDeleteProduct} color="error" variant="contained">Xóa</Button>
+        </DialogActions>
+      </Dialog>
+      {/* Dialog xác nhận xóa topping */}
+      <Dialog 
+        open={state.openConfirmDeleteToppingDialog} 
+        onClose={() => dispatch({ type: 'CLOSE_CONFIRM_DELETE_TOPPING_DIALOG' })}
+      >
+        <DialogTitle>Xác nhận xóa</DialogTitle>
+        <DialogContent>
+          <Typography>Bạn có chắc chắn muốn xóa món ăn phụ này?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => dispatch({ type: 'CLOSE_CONFIRM_DELETE_TOPPING_DIALOG' })}>Hủy</Button>
+          <Button onClick={confirmDeleteTopping} color="error" variant="contained">Xóa</Button>
+        </DialogActions>
+      </Dialog>
+
+      <ToastContainer />
     </>
+    
   );
 };
 

@@ -43,10 +43,12 @@ export class CustomerController {
     async getTotalOrders(@Body() data: any) {
         try {
             const totalOrders = await this.customerService.getTotalOrders(data.phone);
+            console.log(totalOrders);
             return {
                 message: 'Total orders fetched successfully',
                 data: totalOrders,
             };
+            
         } catch (error) {
             return {
                 message: 'Error fetching total orders',

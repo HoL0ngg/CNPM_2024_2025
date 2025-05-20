@@ -42,15 +42,26 @@ export class OrderController {
     @Put()
     async update(@Body() orderData: any) {
         try {
+            //kiểm tra xem món ăn của đơn hàng còn đủ số lượng không
+            const checkValid = await this.orderService.checkFoodQuantity(orderData);
+            if (!checkValid.status) {
+                return {
+                    message: 'Order update failed',
+                    error: checkValid.error,
+                    statusQuantity: false
+                };
+            }
             const order = await this.orderService.update(orderData);
             return {
                 message: 'Order updated successfully',
                 data: order,
+                status: true
             };
         } catch (error) {
             return {
                 message: 'Error updating order',
                 error: error.message,
+                status: false
             };
         }
     }
@@ -62,11 +73,13 @@ export class OrderController {
             return {
                 message: 'Order cancelled successfully',
                 data: order,
+                status: true
             };
         } catch (error) {
             return {
                 message: 'Error cancelling order',
                 error: error.message,
+                status: false
             };
         }
     }

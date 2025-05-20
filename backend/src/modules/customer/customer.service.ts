@@ -20,11 +20,15 @@ export class CustomerService {
     }
 
     async getTotalOrders(data: any): Promise<number> {
-        return this.customerRepository
+        const result = await this.customerRepository
             .createQueryBuilder('customer')
-            .leftJoinAndSelect('customer.orders', 'order')
+            .innerJoin('customer.orders', 'order')
             .where('customer.phone = :phone', { phone: data })
-            .getCount();
+            .andWhere('order.status = :status', { status: 'Đã hoàn thành' })
+            .select('COUNT(order.id)', 'count')
+            .getRawOne();
+
+        return Number(result.count) || 0;
     }
 
     async getTotalSpent(data: any): Promise<number> {

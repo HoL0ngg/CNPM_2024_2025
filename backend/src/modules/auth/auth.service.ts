@@ -11,7 +11,9 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, password: string) {
+    console.log('Validating user:', username);
     const user = await this.userService.findByUsername(username);
+    console.log('User found:', user);
     if (!user) {
       return null;
     }
@@ -27,7 +29,7 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { username: user.username, sub: user.id };
-    
+    // console.log('Payload:', payload);
     return {
       access_token: this.jwtService.sign(payload),
       user: {
