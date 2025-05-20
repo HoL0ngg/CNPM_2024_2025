@@ -24,7 +24,9 @@ export class CustomerService {
             .createQueryBuilder('customer')
             .innerJoin('customer.orders', 'order')
             .where('customer.phone = :phone', { phone: data })
-            .andWhere('order.status = :status', { status: 'Đã hoàn thành' })
+            .andWhere('order.status IN (:...statuses)', { 
+                statuses: ['Đã hoàn thành', 'Đang nấu'] 
+            })
             .select('COUNT(order.id)', 'count')
             .getRawOne();
 
@@ -37,8 +39,8 @@ export class CustomerService {
             .leftJoin('customer.orders', 'order')
             .select('SUM(order.totalPrice)', 'total')
             .where('customer.phone = :phone', { phone: data })
-            .andWhere('order.status NOT IN (:...excludedStatuses)', {
-                excludedStatuses: ['Chờ xử lý', 'Đã hủy'],
+            .andWhere('order.status IN (:...statuses)', { 
+                statuses: ['Đã hoàn thành', 'Đang nấu'] 
             })
             .getRawOne();
 

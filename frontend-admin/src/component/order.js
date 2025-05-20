@@ -346,15 +346,9 @@ const Order = () => {
         <DialogTitle>
           Chi tiết đơn hàng {selectedOrder?.id}
         </DialogTitle>
-        <DialogContent sx={{ 
-          overflow: 'auto', 
-          display: 'flex',
-          flexDirection: 'column',
-          paddingBottom: 0,
-          flex: 1
-        }}>
+        <DialogContent>
           {selectedOrder && (
-            <Grid container spacing={2}>
+            <Grid container spacing={2} className="order-detail-grid">
               <Grid item xs={6}>
                 <Box className="customer-info-section">
                   <Typography variant="subtitle1" className="info-title">Thông tin khách hàng</Typography>

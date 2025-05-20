@@ -88,8 +88,8 @@ const Customer = () => {
 
   const getStatusColor = (status) => {
     switch(status) {
-      case 'Đã hoàn thành': return { color: 'success.main', text: 'Đã giao' };
-      case 'Đang nấu': return { color: 'info.main', text: 'Đang giao' };
+      case 'Đã hoàn thành': return { color: 'success.main', text: 'Đã hoàn thành' };
+      case 'Đang nấu': return { color: 'info.main', text: 'Đang nấu' };
       case 'Chờ xử lý': return { color: 'warning.main', text: 'Chờ xử lý' };
       case 'Đã hủy': return { color: 'error.main', text: 'Đã hủy' };
       default: return { color: 'text.secondary', text: status };
@@ -140,8 +140,7 @@ const Customer = () => {
                 <TableCell>Khách hàng</TableCell>
              
                 <TableCell>Số điện thoại</TableCell>
-                <TableCell>Số đơn hàng</TableCell>
-                <TableCell>Tổng chi tiêu</TableCell>
+                
                 <TableCell align="right">Hành động</TableCell>
               </TableRow>
             </TableHead>
@@ -151,8 +150,7 @@ const Customer = () => {
                   <TableCell>{customer.name}</TableCell>
                 
                   <TableCell>{customer.phone}</TableCell>
-                  <TableCell>{customer.orders}</TableCell>
-                  <TableCell>{customer.total}</TableCell>
+             
                   <TableCell align="right">
                     <Button 
                       size="small" 
@@ -185,7 +183,7 @@ const Customer = () => {
                
                 
                 {tabValue === 0 && (
-                  <Box>
+                  <Box sx={{ overflowY: 'auto', maxHeight: 400 }}>
                     <Grid container spacing={2}>
                       <Grid item xs={6}>
                         <Card sx={{ bgcolor: '#f8f9fa', mb: 2 }}>

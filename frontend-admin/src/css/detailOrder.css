@@ -162,3 +162,14 @@
 .order-info-section{
   width: 150px !important;
 }
+
+.order-detail-grid{
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  padding: 10px !important;
+}
+.order-info-section, .customer-info-section{
+  width: 100% !important;
+  padding: 10px !important;
+}

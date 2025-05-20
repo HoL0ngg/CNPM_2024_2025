@@ -633,9 +633,9 @@ const Product = () => {
           {state.selectedProduct ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}
         </DialogTitle>
         <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
+          <DialogContent className='dialog-content-form-product'>
+            <Grid container spacing={2} justifyContent="space-between">
+              <Grid item xs={7} >
                 <TextField
                   fullWidth
                   label="Tên sản phẩm"
@@ -645,7 +645,7 @@ const Product = () => {
                   className="input-field"
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Grid item xs={7} sx={{ width: '200px' }}>
                 <FormControl fullWidth required>
                   <InputLabel>Danh mục</InputLabel>
                   <Select
@@ -673,7 +673,7 @@ const Product = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={5}>
+              <Grid item xs={7}>
                 <TextField
                   fullWidth
                   name="quantity"
@@ -727,24 +727,25 @@ const Product = () => {
                   </Box>
                 )}
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={7} sx={{ width: '300px' }}>
                 <TextField
                   fullWidth
                   name="description"
                   label="Mô tả"
                   multiline
-                  rows={4}
+                  rows={8}
                   defaultValue={state.selectedProduct?.description || ''}
                   className="multiline-input"
                 />
               </Grid>
               {/* Thêm phần hiển thị danh sách topping */}
-              <Grid item xs={12}>
+              <Grid item xs={7}>
                 <Typography variant="subtitle1" gutterBottom>
                   Món ăn phụ kèm theo
                 </Typography>
                 <Box sx={{ 
                   display: 'grid', 
+                  width: '500px',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
                   gap: 1, 
                   maxHeight: '200px', 
