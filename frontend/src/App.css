@@ -1184,6 +1184,10 @@
   .product-detail-content {
     width: 95%;
   }
+  .checkout-content {
+    max-height: 100vh;
+    overflow: auto;
+  }
 }
 
 @media screen and (max-width: 650px) {
