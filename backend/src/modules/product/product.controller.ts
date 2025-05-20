@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Express } from 'express';
+import { stat } from 'fs';
 
 
 @Controller('product')
@@ -78,4 +79,22 @@ export class ProductController {
             };
         }
     }
+
+    @Post('remove')
+    async remove(@Body() data: any) {
+        try {
+            await this.productService.remove(data.id);
+            return {
+                message: 'Product deleted successfully',
+                status: true,
+            };
+        } catch (error) {
+            return {
+                message: 'Error deleting product',
+                error: error.message,
+                status: false,
+            };
+        }
+    }
+    
 }

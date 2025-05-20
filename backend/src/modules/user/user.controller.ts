@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 
@@ -13,8 +13,19 @@ export class UserController {
     ) {}
 
     @Post()
-    async create(@Body() data: any): Promise<User[]> {
-        return await this.userService.create(data);
+    async create(@Body() data: any){
+       try {
+         await this.userService.create(data);
+         return{
+            message: 'Tạo tài khoản thành công',
+            status: true
+         }
+        } catch (error) {
+            return {
+                message: 'Tạo tài khoản không thành công',
+                status: false
+            }
+       }
     }
 
     @Get()
@@ -31,8 +42,84 @@ export class UserController {
     }
 
     @Post('reset-password')
-    async resetPassword(@Body() data: any): Promise<User | null> {
-        return await this.userService.resetPassword(data);
+    async resetPassword(@Body() data: any){
+        try {
+            const user = await this.userService.resetPassword(data);
+            if(user) {
+                return {
+                    message: 'Khôi phục thành công',
+                    user: user,
+                    status: true
+                }
+            }
+        }
+        catch (error) {
+            return {
+                message: 'Khôi phục không thành công',
+                status: false
+            }
+        }
     }
-    
+ 
+    @Put()
+    async update(@Body() data: any){
+        try {
+            console.log("controller", data);
+            const user = await this.userService.update(data);
+            if(user) {
+                return {
+                    message: 'Cập nhật thành công',
+                    user: user,
+                    status: true
+                }
+            }
+        }
+        catch (error) {
+            return {
+                message: 'Cập nhật không thành công',
+                status: false
+            }
+        }
+    }
+
+    @Post('change-password')
+    async changePassword(@Body() data: any){
+        try {
+            console.log("controller", data);    
+            const user = await this.userService.changePassword(data);
+            if(user) {
+                return {
+                    message: 'Đổi mật khẩu thành công',
+                    user: user,
+                    status: true
+                }
+            }
+        }
+        catch (error) {
+            return {
+                message: 'Đổi mật khẩu không thành công',
+                status: false
+            }
+        }
+    }
+
+    @Post('username')
+    async getByUsername(@Body() data: any){
+        try {
+            const user = await this.userService.findByUsername(data.username);
+            if(user) {
+                return {
+                    message: 'Tài khoản đã tồn tại',
+                    user: user,
+                    status: true
+                }
+            }
+        }
+        catch (error) {
+            return {
+                message: 'Tìm tài khoản không thành công',
+                status: false
+            }
+        }
+    }
 }

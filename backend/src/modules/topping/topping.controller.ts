@@ -62,12 +62,12 @@ export class ToppingController {
         try {
             const topping = await this.toppingService.delete(toppingData);
             return {
-                message: 'Topping deleted successfully',
+                message: 'Xóa topping thành công',
                 data: topping,
             };
         } catch (error) {
             return {
-                message: 'Error deleting topping',
+                message: 'Lỗi khi xóa topping',
                 error: error.message,
             };
         }

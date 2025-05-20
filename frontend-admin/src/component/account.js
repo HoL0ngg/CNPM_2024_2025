@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useReducer } from 'react';
 import {  Password, Security as SecurityIcon } from '@mui/icons-material';
 import {
+  LockOpen as LockOpenIcon,
+} from '@mui/icons-material';
+import {
   FormControl,
   InputLabel,
   Select,
@@ -50,9 +53,17 @@ import {
   Key as KeyIcon
 } from '@mui/icons-material';
 import '../css/account.css';
+import { toast, ToastContainer } from 'react-toastify';
 
 // Định nghĩa initialState
 const initialState = {
+  confirmDialog: {
+    open: false,
+    account: null,
+    accountId: null,
+    accountStatus: null,
+    message: ''
+  },
   accounts: [],
   currentAccount: null,
   loading: false,
@@ -80,6 +91,29 @@ const initialState = {
 // Reducer function
 function reducer(state, action) {
   switch (action.type) {
+    case 'OPEN_CONFIRM_DIALOG':
+    return { 
+      ...state, 
+      confirmDialog: { 
+        open: true, 
+        account: action.payload.account,
+        accountId: action.payload.account.id,
+        accountStatus: action.payload.account.status,
+        message: action.payload.message
+      } 
+    };
+  
+    case 'CLOSE_CONFIRM_DIALOG':
+      return { 
+        ...state, 
+        confirmDialog: { 
+          open: false, 
+          accountId: null,
+          accountStatus: null,
+          message: '',
+          account: null
+        } 
+    };
     case 'FETCH_ACCOUNTS_START':
       return { ...state, loading: true, error: null };
     case 'FETCH_ACCOUNTS_SUCCESS':
@@ -168,7 +202,7 @@ const Account = () => {
     dispatch({ type: 'FETCH_ACCOUNTS_START' });
     try {
       const response = await axios.get('/api/users');
-      console.log(response.data);
+      // console.log(response.data);
       let arrAccounts = response.data.filter(account => account.id !== idCurrentUser);
       dispatch({ 
         type: 'FETCH_ACCOUNTS_SUCCESS', 
@@ -183,39 +217,75 @@ const Account = () => {
   };
 
   const handleSaveAccount = async (e) => {
+    let roleString = e.target.role.value;
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const accountData = Object.fromEntries(formData.entries());
-    
     try {
       let response;
       if (state.currentAccount?.id) {
         // Cập nhật tài khoản
-        response = await axios.put(`/api/users`, accountData);
-        dispatch({ 
-          type: 'SET_SUCCESS', 
-          payload: 'Cập nhật tài khoản thành công!' 
-        });
+        state.currentAccount.role = roleString;
+        // console.log(state.currentAccount);
+        response = await axios.put(`/api/users`, state.currentAccount);
+       
       } else {
         // Tạo tài khoản mới
-        response = await axios.post('/api/users', accountData);
-        dispatch({ 
-          type: 'SET_SUCCESS', 
-          payload: 'Thêm tài khoản thành công!' 
-        });
+        const newAccount = {
+          username: e.target.username.value,
+          name: e.target.name.value,
+          password: e.target.password.value,
+          role: roleString,
+        }
+        response = await axios.post('/api/users/username', newAccount);
+        if(response.data.status){
+          toast.error(response.data.message, {
+            position: "top-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          return;
+        }
+        response = await axios.post('/api/users', newAccount);
       }
       
       // Refresh danh sách tài khoản
       fetchAccounts();
       dispatch({ type: 'CLOSE_DIALOG' });
-      
-      setTimeout(() => {
-        dispatch({ type: 'CLEAR_SUCCESS' });
-      }, 3000);
+      if(response.data.status){
+        toast.success(response.data.message, {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+      else{
+        toast.error(response.data.message, {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+
     } catch (error) {
-      dispatch({
-        type: 'FETCH_ACCOUNTS_FAILURE',
-        payload: error.response?.data?.message || 'Lỗi khi lưu tài khoản'
+      toast.error(error.response?.data?.message, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
     }
   };
@@ -229,38 +299,83 @@ const Account = () => {
         'Content-Type': 'application/json',
       },
     });
+    const result = response.data;
+    if(result.status){
+      toast.success(result.message, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    else{
+      toast.error(result.message, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
     fetchAccounts();
   };
 
-  const handleDeleteAccount = async (id) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa tài khoản này?')) {
-      return;
-    }
-    
-    try {
-      await axios.delete(`/user/${id}`);
+ 
+  const handleToggleStatus = (account) => {
+    const message = account.status === "Đang hoạt động" 
+      ? 'Bạn có chắc chắn muốn khóa tài khoản này?' 
+      : 'Bạn có chắc chắn muốn mở khóa tài khoản này?';
       
-      dispatch({ 
-        type: 'SET_SUCCESS', 
-        payload: 'Xóa tài khoản thành công!' 
-      });
-      
-      // Refresh danh sách tài khoản
-      fetchAccounts();
-      
-      setTimeout(() => {
-        dispatch({ type: 'CLEAR_SUCCESS' });
-      }, 3000);
-    } catch (error) {
-      dispatch({
-        type: 'FETCH_ACCOUNTS_FAILURE',
-        payload: error.response?.data?.message || 'Lỗi khi xóa tài khoản'
-      });
-    }
+    dispatch({ 
+      type: 'OPEN_CONFIRM_DIALOG', 
+      payload: {
+        account: account,
+        message: message
+      } 
+    });
   };
 
-  const handleTabChange = (event, newValue) => {
-    dispatch({ type: 'SET_TAB_VALUE', payload: newValue });
+  const confirmStatusChange = async () => {
+    const selectedAccount = state.confirmDialog.account;
+    const newStatus = selectedAccount.status === "Đang hoạt động" ? "Đã khóa" : "Đang hoạt động";
+    selectedAccount.status = newStatus;
+
+    const response = await axios.put(`/api/users`, selectedAccount , {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const result = response.data;
+    if(result.status){
+      toast.success(result.message, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    else{
+      toast.error(result.message, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    dispatch({ type: 'CLOSE_CONFIRM_DIALOG' });
+    fetchAccounts();
+
   };
 
   return (
@@ -304,27 +419,34 @@ const Account = () => {
                         {account.username}
                         </TableCell>
                         <TableCell>
-                        {account.role === 'admin' ? 'Quản trị viên' : 
-                        account.role === 'manager' ? 'Quản lý' : 
-                        account.role === 'accountant' ? 'Kế toán' : account.role}
+                          {account.role === 'admin' ? 'Quản trị viên' : 
+                          account.role === 'chef' ? 'Bếp' : 
+                          account.role === 'clerk' ? 'Nhân viên' : ''}
                         </TableCell>
                         <TableCell>{new Date(account.created_at).toLocaleDateString('vi-VN')}</TableCell>
                         <TableCell>
-                        <Chip 
-                            label={account.status === "Đang hoạt động" ? "Hoạt động" : "Tạm khóa"} 
-                            color={account.status === "Đang hoạt động" ? "success" : "error"} 
-                            size="small" 
-                        />
+                          <Chip 
+                              label={account.status === "Đang hoạt động" ? "Hoạt động" : "Tạm khóa"} 
+                              color={account.status === "Đang hoạt động" ? "success" : "error"} 
+                              size="small" 
+                          />
                         </TableCell>
                         <TableCell align="right">
-                        <Box className="table-actions">
-                            <IconButton 
-                            color="primary" 
-                            onClick={() => dispatch({ type: 'OPEN_DIALOG', payload: account })}
-                            >
-                            <EditIcon />
-                            </IconButton>
-                        </Box>
+                          <Box className="table-actions">
+                              <IconButton 
+                              color="primary" 
+                              onClick={() => dispatch({ type: 'OPEN_DIALOG', payload: account })}
+                              >
+                              <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                  color={account.status === "Đang hoạt động" ? "error" : "success"}
+                                  onClick={() => handleToggleStatus(account)}
+                                  title={account.status === "Đang hoạt động" ? "Khóa tài khoản" : "Mở khóa tài khoản"}
+                              >
+                                  {account.status === "Đang hoạt động" ? <LockIcon /> : <LockOpenIcon />}
+                              </IconButton>
+                          </Box>
                         </TableCell>
                     </TableRow>
                     ))}
@@ -404,11 +526,15 @@ const Account = () => {
     
     <Grid item xs={12}>
         <FormControl fullWidth variant="outlined">
-            <InputLabel id="role-select-label">Quyền</InputLabel>
+            <InputLabel id="role-select-label">Vai trò</InputLabel>
             <Select
                 labelId="role-select-label"
                 name="role"
-                value={state.currentAccount?.role || 'admin'}
+                
+                value={state.currentAccount?.role === 'admin' ? "admin" : 
+                state.currentAccount?.role === 'chef' ? "chef" :
+                state.currentAccount?.role === 'clerk' ? "clerk" : 'clerk'}
+                
                 onChange={(e) => {
                 // Tùy chọn: Cập nhật state nếu cần
                 dispatch({ 
@@ -417,26 +543,21 @@ const Account = () => {
                 });
                 }}
                 label="Quyền"
-                startAdornment={
-                <InputAdornment position="start">
-                    <SecurityIcon />
-                </InputAdornment>
-                }
                 required
             >
-                <MenuItem value="admin">Quản trị viên</MenuItem>
-                <MenuItem value="manager">Quản lý</MenuItem>
-                <MenuItem value="accountant">Kế toán</MenuItem>
+                <MenuItem value="admin">Chủ nhà hàng</MenuItem>
+                <MenuItem value="chef">Bếp</MenuItem>
+                <MenuItem value="clerk">Nhân viên</MenuItem>
             </Select>
-        </FormControl>
-    </Grid>
-</Grid> 
+          </FormControl>
+        </Grid>
+    </Grid> 
           </DialogContent>
           <DialogActions className="dialog-actions">
             <Button onClick={() => dispatch({ type: 'CLOSE_DIALOG' })} className="cancel-button">
               Hủy
             </Button>
-            <Button type="submit" variant="contained" startIcon={<SaveIcon />} className="save-button">
+            <Button type="submit" variant="contained" className="save-button">
               {state.currentAccount?.id ? 'Cập nhật' : 'Thêm mới'}
             </Button>
           </DialogActions>
@@ -463,6 +584,36 @@ const Account = () => {
           {state.error}
         </Alert>
       </Snackbar>
+
+      <Dialog
+        open={state.confirmDialog.open}
+        onClose={() => dispatch({ type: 'CLOSE_CONFIRM_DIALOG' })}
+      >
+        <DialogTitle>
+          {state.confirmDialog.accountStatus === "Đang hoạt động" 
+            ? 'Xác nhận khóa tài khoản' 
+            : 'Xác nhận mở khóa tài khoản'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography>{state.confirmDialog.message}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => dispatch({ type: 'CLOSE_CONFIRM_DIALOG' })}>
+            Hủy
+          </Button>
+          <Button 
+            onClick={confirmStatusChange} 
+            color={state.confirmDialog.accountStatus === "Đang hoạt động" ? "error" : "success"} 
+            variant="contained"
+            startIcon={state.confirmDialog.accountStatus === "Đang hoạt động" ? <LockIcon /> : <LockOpenIcon />}
+          >
+            {state.confirmDialog.accountStatus === "Đang hoạt động" ? 'Khóa' : 'Mở khóa'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <ToastContainer />
+      
     </>
   );
 };

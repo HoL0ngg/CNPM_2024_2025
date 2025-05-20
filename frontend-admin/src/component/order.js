@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Typography, Paper, Box, TextField, InputAdornment, Button,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
@@ -15,6 +16,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import '../css/detailOrder.css';
+import { ToastContainer, toast } from 'react-toastify';
 
 const Order = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -23,6 +25,8 @@ const Order = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [tabValue, setTabValue] = useState(0);
   const [orders, setOrders] = useState([]);
+  const [openCancelDialog, setOpenCancelDialog] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   const getData = async () => {
     const reponse = await axios.get('/order');
@@ -113,20 +117,89 @@ const Order = () => {
         'Content-Type': 'application/json',
       },
     });
-    console.log(response.data);
+    const result = response.data;
+    if(result.statusQuantity) {
+      toast.error(result.error, {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      })
+      return;
+    }
+    else if(result.status) {
+      toast.success('Cập nhật đơn hàng thành công', {
+        position: "top-right",
+        autoClose: 4000,  
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    else {
+      toast.error('Cập nhật đơn hàng thất bại', {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    // console.log(response.data);
     getData();
     
   }
 
-  const handleCancel = async (order) => {
-   const response = await axios.put(`/order/cancel`, order, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    console.log(response.data);
-    getData();
-  }
+  const handleOpenCancelDialog = (order) => {
+    setOrderToCancel(order);
+    setOpenCancelDialog(true);
+  };
+
+  const handleCancel = async () => {
+    try {
+      const response = await axios.put(`/order/cancel`, orderToCancel, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const result = response.data;
+      if(result.status) {
+        toast.success('Hủy đơn hàng thành công', {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+      else{
+        toast.error('Hủy đơn hàng thất bại', {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
+
+      getData();
+      setOpenCancelDialog(false);
+      setOrderToCancel(null);
+    } catch (error) {
+      console.error("Lỗi khi hủy đơn hàng:", error);
+    }
+  };
 
   return (
     <>
@@ -215,7 +288,7 @@ const Order = () => {
                         size="small" 
                         variant="contained" 
                         color="primary"
-                        startIcon={<ShippingIcon />}
+                       
                         sx={{ mr: 1 }}
                         onClick = {() => handleUpdate(order)}
                       >
@@ -223,17 +296,17 @@ const Order = () => {
                       </Button>
                     )}
                     
-                    {(order.status === 'Chờ xử lý' || order.status === 'Đang nấu') && (
-                      <Button 
-                        size="small" 
-                        variant="contained" 
-                        color="error"
-                        startIcon={<CancelIcon />}
-                        onClick ={() => handleCancel(order)}
-                      >
-                        Hủy
-                      </Button>
-                    )}
+                  {(order.status === 'Chờ xử lý' || order.status === 'Đang nấu') && (
+                    <Button 
+                      size="small" 
+                      variant="contained" 
+                      color="error"
+                      startIcon={<CancelIcon />}
+                      onClick={() => handleOpenCancelDialog(order)}
+                    >
+                      Hủy
+                    </Button>
+                  )}
                     
                     {order.status === 'Đang nấu' && (
                       <Button 
@@ -412,6 +485,33 @@ const Order = () => {
           )}
         </DialogActions>
       </Dialog>
+
+      {/* Dialog xác nhận hủy đơn */}
+      <Dialog
+        open={openCancelDialog}
+        onClose={() => setOpenCancelDialog(false)}
+      >
+        <DialogTitle>Xác nhận hủy đơn</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Bạn có chắc chắn muốn hủy đơn hàng #{orderToCancel?.id} không?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenCancelDialog(false)}>
+            Không
+          </Button>
+          <Button 
+            onClick={handleCancel} 
+            color="error" 
+            variant="contained"
+            startIcon={<CancelIcon />}
+          >
+            Xác nhận hủy
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <ToastContainer />
     </>
   );
 };
