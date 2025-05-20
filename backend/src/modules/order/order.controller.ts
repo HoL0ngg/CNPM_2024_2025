@@ -46,14 +46,14 @@ export class OrderController {
             const checkValid = await this.orderService.checkFoodQuantity(orderData);
             if (!checkValid.status) {
                 return {
-                    message: 'Order update failed',
+                    message: checkValid.error,
                     error: checkValid.error,
                     statusQuantity: false
                 };
             }
             const order = await this.orderService.update(orderData);
             return {
-                message: 'Order updated successfully',
+                message: 'Cập nhật đơn hàng thành công',
                 data: order,
                 status: true
             };

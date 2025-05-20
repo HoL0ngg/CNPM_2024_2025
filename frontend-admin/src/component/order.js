@@ -131,7 +131,7 @@ const Order = () => {
       return;
     }
     else if(result.status) {
-      toast.success('Cập nhật đơn hàng thành công', {
+      toast.success(result.message, {
         position: "top-right",
         autoClose: 4000,  
         hideProgressBar: false,
@@ -142,7 +142,7 @@ const Order = () => {
       });
     }
     else {
-      toast.error('Cập nhật đơn hàng thất bại', {
+      toast.error(result.message, {
         position: "top-right",
         autoClose: 4000,
         hideProgressBar: false,

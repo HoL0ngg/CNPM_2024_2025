@@ -160,11 +160,11 @@ export class OrderService {
         for (const detailOrder of detailOrders) {
             const product = await this.productRepository.findOne({ where: { id: detailOrder.productId } });
             if (product && product.quantity < detailOrder.quantityProduct) {
-                return { status: false, error: `Not enough quantity for product ${product.name}` };
+                return { status: false, error: `Không đủ số lượng sản phẩm ${product.name}` };
             }
             const topping = await this.top.findOne({ where: { id: detailOrder.toppingId } });
             if (topping && topping.quantity < 1 && topping.id !== 0) {
-                return { status: false, error: `Not enough quantity for topping ${topping.name}` };
+                return { status: false, error: `Không đủ số lượng topping ${topping.name}` };
             }
         }
         return { status: true };

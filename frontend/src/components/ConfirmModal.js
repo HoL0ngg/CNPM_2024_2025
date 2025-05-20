@@ -70,24 +70,18 @@ const ConfirmModal = ({ cartItems, subtotal, tax, total, onCloseCheckoutConfirm,
           <h3>Thông tin khách hàng</h3>
           <div className="checkout-info-row">
             <div className="checkout-info-label">Họ và tên:</div>
-            <div className="checkout-info-value">{ }</div>
+            <div className="checkout-info-value">{ customerInfo.name }</div>
           </div>
           <div className="checkout-info-row">
             <div className="checkout-info-label">Số điện thoại:</div>
-            <div className="checkout-info-value">{ }</div>
+            <div className="checkout-info-value">{ customerInfo.phone }</div>
           </div>
 
-          <div className="checkout-info-row">
-            <div className="checkout-info-label">Ghi chú:</div>
-            <div className="checkout-info-value">{ }</div>
-          </div>
 
           <div className="checkout-info-row">
             <div className="checkout-info-label">Phương thức thanh toán:</div>
             <div className="checkout-info-value">
-              {paymentMethod === 'cash' && 'Tiền mặt'}
-              {paymentMethod === 'banking' && 'Chuyển khoản ngân hàng'}
-              {paymentMethod === 'momo' && 'Ví MoMo'}
+              { paymentMethod }
             </div>
           </div>
         </div>
